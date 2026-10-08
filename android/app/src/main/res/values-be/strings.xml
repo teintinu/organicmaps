@@ -865,7 +865,7 @@
     <string name="start_track_recording">Запіс маршруту</string>
     <!-- Prompt for stopping a track recording. -->
     <string name="stop_track_recording">Спыніць запіс маршруту</string>
-    <!-- Subtitle of the place page of the track being recorded, and the name and title of the home screen widget. -->
+    <!-- Subtitle of the recording Place Page, title of the home widget, and VoiceOver label of the iOS map control. -->
     <string name="track_recording_title">Запіс маршруту</string>
     <!-- Message for the toast when saving the track recording is finished but nothing to save. -->
     <string name="track_recording_toast_nothing_to_save">Маршрут пусты - няма чаго захоўваць</string>

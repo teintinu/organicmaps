@@ -843,7 +843,7 @@
     <string name="start_track_recording">Merekam jalur</string>
     <!-- Prompt for stopping a track recording. -->
     <string name="stop_track_recording">Hentikan perekaman jalur</string>
-    <!-- Subtitle of the place page of the track being recorded, and the name and title of the home screen widget. -->
+    <!-- Subtitle of the recording Place Page, title of the home widget, and VoiceOver label of the iOS map control. -->
     <string name="track_recording_title">Perekaman Jalur</string>
     <!-- Message for the toast when saving the track recording is finished but nothing to save. -->
     <string name="track_recording_toast_nothing_to_save">Jalur kosong - tidak ada yang bisa disimpan</string>
