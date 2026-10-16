@@ -115,6 +115,9 @@ private final class RectShadowView: UIView {
     super.viewDidAppear(animated)
     isVisible = true
     updatePreviewOffset()
+    if UIAccessibility.isVoiceOverRunning {
+      UIAccessibility.post(notification: .screenChanged, argument: layout.headerViewController.accessibilityTitle)
+    }
   }
 
   override func viewWillDisappear(_ animated: Bool) {

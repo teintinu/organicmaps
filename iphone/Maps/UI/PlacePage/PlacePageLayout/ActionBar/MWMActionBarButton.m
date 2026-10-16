@@ -52,6 +52,8 @@ typedef NS_ENUM(NSInteger, MWMBookmarksButtonState) {
 - (void)configButton:(BOOL)isSelected primary:(BOOL)isPrimary
 {
   self.label.text = titleForButton(self.type, isSelected);
+  self.label.isAccessibilityElement = NO;
+  self.button.accessibilityLabel = self.label.text;
   self.button.coloring = isPrimary ? MWMButtonColoringBlue : MWMButtonColoringBlack;
   [self.button.imageView setContentMode:UIViewContentModeScaleAspectFit];
 
@@ -179,6 +181,7 @@ typedef NS_ENUM(NSInteger, MWMBookmarksButtonState) {
   case MWMBookmarksButtonStateDelete: self.label.text = L(@"delete"); break;
   case MWMBookmarksButtonStateRecover: self.label.text = L(@"restore"); break;
   }
+  self.button.accessibilityLabel = self.label.text;
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
