@@ -233,6 +233,7 @@ private final class RectShadowView: UIView {
     stackView.spacing = layout.sectionSpacing
     fillHeader(with: layout.headerViewControllers)
     fillBody(with: layout.bodyViewControllers, showSeparator: showSeparator)
+    layout.headerViewController.view.accessibilityElementsHidden = isNavigationBarVisible
 
     layout.headerViewController.didStartEditingTitle = { [weak self] isEditing in
       self?.scrollView.isScrollEnabled = !isEditing
@@ -525,6 +526,7 @@ extension PlacePageViewController: UIScrollViewDelegate {
 
   private func setNavigationBarVisible(_ visible: Bool) {
     guard visible != isNavigationBarVisible, let navigationBar = layout?.navigationBar else { return }
+    layout?.headerViewController.view.accessibilityElementsHidden = visible
     if visible {
       addNavigationBar(navigationBar)
     } else {
