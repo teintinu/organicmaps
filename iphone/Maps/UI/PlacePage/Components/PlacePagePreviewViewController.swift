@@ -20,6 +20,7 @@ final class PlacePagePreviewViewController: UIViewController {
   @IBOutlet var addReviewButton: UIButton! {
     didSet {
       addReviewButton.setTitle("+ \(L("leave_a_review"))", for: .normal)
+      addReviewButton.accessibilityLabel = L("leave_a_review")
     }
   }
 

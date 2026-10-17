@@ -184,6 +184,18 @@ typedef NS_ENUM(NSInteger, MWMBookmarksButtonState) {
   self.button.accessibilityLabel = self.label.text;
 }
 
+- (void)setDownloadAccessibilityLabel:(NSString *)label
+{
+  self.button.accessibilityLabel = label;
+  self.button.accessibilityValue = nil;
+}
+
+- (void)setDownloadAccessibilityProgress:(CGFloat)progress
+{
+  self.button.accessibilityValue = [NSNumberFormatter localizedStringFromNumber:@(progress)
+                                                                    numberStyle:NSNumberFormatterPercentStyle];
+}
+
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   return [self pointInside:point withEvent:event] ? self.button : nil;
