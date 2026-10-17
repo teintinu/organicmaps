@@ -224,6 +224,7 @@ extension PlacePageHeaderViewController: PlacePageHeaderViewProtocol {
     titleTextView.attributedText = titleString
     subtitleLabel.text = subtitleText
     titleTextView.accessibilityLabel = isEditingTitle ? nil : titleText
+    titleTextView.accessibilityValue = isEditingTitle ? nil : ""
   }
 
   func showShareTrackMenu() {
