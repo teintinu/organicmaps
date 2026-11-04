@@ -1018,6 +1018,7 @@ NSString * const kCategorySelectorSegue = @"MapToCategorySelectorSegue";
 
 - (void)disableCarPlayRepresentation
 {
+  self.carplayPlaceholderView.accessibilityElementsHidden = YES;
   self.carplayPlaceholderView.hidden = YES;
   self.mapView.frame = self.view.bounds;
   [self.view insertSubview:self.mapView atIndex:0];
@@ -1040,6 +1041,7 @@ NSString * const kCategorySelectorSegue = @"MapToCategorySelectorSegue";
   if (!self.controlsView.isHidden)
     self.controlsView.hidden = YES;
   self.carplayPlaceholderView.hidden = NO;
+  self.carplayPlaceholderView.accessibilityElementsHidden = NO;
 }
 
 #pragma mark - MWMBookmarksObserver
