@@ -241,14 +241,15 @@ public class ManageRouteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     notifyDataSetChanged();
   }
 
-  public void setTrackPoints(@NonNull String trackName)
+  public void setTrackPoints(@NonNull String trackName, boolean reversed)
   {
     mTrackRoute = true;
     mRoutePoints.clear();
     mRoutePoints.add(trackRow(null, RouteMarkType.Start, true));
-    mRoutePoints.add(trackRow(trackName.isEmpty() ? mContext.getString(R.string.navigate_track_start) : trackName,
+    mRoutePoints.add(trackRow(trackName.isEmpty() ? mContext.getString(R.string.navigate_track_entry) : trackName,
                               RouteMarkType.Intermediate, false));
-    mRoutePoints.add(trackRow(mContext.getString(R.string.navigate_track_finish), RouteMarkType.Finish, false));
+    mRoutePoints.add(
+        trackRow(mContext.getString(RoutePointLabels.trackDestination(reversed)), RouteMarkType.Finish, false));
     notifyDataSetChanged();
   }
 

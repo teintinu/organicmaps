@@ -25,10 +25,12 @@ std::optional<TrackSourcePosition> ResolveTrackEntry(Track const & track, m2::Po
 // The caller supplies a finite distance in [0, track length]. A gap uses the preceding section.
 TrackSourcePosition ResolveTrackEntryAt(Track const & track, double distanceFromBeginningM);
 
-// Whether horizontal geometry remains after a valid source position, without preparing stops.
-bool HasRemainingTrackGeometry(kml::MultiGeometry const & geometry, TrackSourcePosition const & entry);
+// Whether horizontal geometry remains in the requested direction from a valid source position, without preparing stops.
+bool HasRemainingTrackGeometry(kml::MultiGeometry const & geometry, TrackSourcePosition const & entry,
+                               bool reverse = false);
 
-// Prepare one connected remainder from a valid source position, preserving source order,
-// stops and altitude availability. Returns nullopt when no horizontal geometry remains.
+// Prepare the connected remainder and its stops in travel order, preserving altitude availability.
+// Returns nullopt when no horizontal geometry remains in that direction.
 std::optional<routing::TrackFollowingData> BuildTrackFollowingData(kml::TrackData const & source,
-                                                                   TrackSourcePosition const & entry);
+                                                                   TrackSourcePosition const & entry,
+                                                                   bool reverse = false);

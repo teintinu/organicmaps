@@ -57,6 +57,7 @@ public class ManageRouteAdapterTest
     when(context.getResources()).thenReturn(resources);
     when(resources.obtainTypedArray(R.array.route_stop_icons)).thenReturn(icons);
     when(icons.length()).thenReturn(20);
+    when(context.getString(R.string.navigate_track_entry)).thenReturn("Selected point");
     when(context.getString(R.string.navigate_track_start)).thenReturn("Track start");
     when(context.getString(R.string.navigate_track_finish)).thenReturn("Track finish");
     return context;
@@ -73,7 +74,7 @@ public class ManageRouteAdapterTest
   public void trackPlanHasThreeFixedRows()
   {
     final ManageRouteAdapter adapter = adapter(trackContext(), mock(ManageRouteAdapter.ManageRouteListener.class));
-    adapter.setTrackPoints("Ridge");
+    adapter.setTrackPoints("Ridge", false);
 
     assertEquals(3, adapter.getItemCount());
     final List<RouteMarkData> rows = adapter.getRoutePoints();
@@ -85,11 +86,11 @@ public class ManageRouteAdapterTest
   }
 
   @Test
-  public void unnamedTrackFallsBackToTrackStart()
+  public void unnamedReversedTrackDistinguishesEntryAndDestination()
   {
     final ManageRouteAdapter adapter = adapter(trackContext(), mock(ManageRouteAdapter.ManageRouteListener.class));
-    adapter.setTrackPoints("");
-    assertEquals(List.of("Track start", "Track finish"),
+    adapter.setTrackPoints("", true);
+    assertEquals(List.of("Selected point", "Track start"),
                  adapter.getRoutePoints().subList(1, 3).stream().map(p -> p.mTitle).toList());
   }
 
@@ -98,7 +99,7 @@ public class ManageRouteAdapterTest
   {
     final ManageRouteAdapter.ManageRouteListener listener = mock(ManageRouteAdapter.ManageRouteListener.class);
     final ManageRouteAdapter adapter = adapter(trackContext(), listener);
-    adapter.setTrackPoints("Ridge");
+    adapter.setTrackPoints("Ridge", false);
     try (MockedStatic<ThemeUtils> theme = mockStatic(ThemeUtils.class);
          MockedStatic<AppCompatResources> drawables = mockStatic(AppCompatResources.class))
     {
@@ -123,7 +124,7 @@ public class ManageRouteAdapterTest
   public void routePointsLeaveTheTrackMode()
   {
     final ManageRouteAdapter adapter = adapter(trackContext(), mock(ManageRouteAdapter.ManageRouteListener.class));
-    adapter.setTrackPoints("Ridge");
+    adapter.setTrackPoints("Ridge", false);
     adapter.setRoutePoints(
         new RouteMarkData[] {point("Start", RouteMarkType.Start, 0), point("Finish", RouteMarkType.Finish, 0)});
     assertEquals(3, adapter.getItemCount());

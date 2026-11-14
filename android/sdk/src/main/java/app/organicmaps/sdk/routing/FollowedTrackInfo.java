@@ -13,12 +13,17 @@ public final class FollowedTrackInfo
   @NonNull
   private final String mName;
   private final double mEntryDistanceMeters;
+  private final boolean mReversed;
+  private final boolean mCanReverse;
 
-  private FollowedTrackInfo(long trackId, @NonNull String name, double entryDistanceMeters)
+  private FollowedTrackInfo(long trackId, @NonNull String name, double entryDistanceMeters, boolean reversed,
+                            boolean canReverse)
   {
     mTrackId = trackId;
     mName = name;
     mEntryDistanceMeters = entryDistanceMeters;
+    mReversed = reversed;
+    mCanReverse = canReverse;
   }
 
   /** The track may have been deleted meanwhile: resolving it needs an existence check. */
@@ -37,5 +42,17 @@ public final class FollowedTrackInfo
   public double getEntryDistanceMeters()
   {
     return mEntryDistanceMeters;
+  }
+
+  /** Whether the connected section extends in the opposite direction from this entry. */
+  public boolean canReverse()
+  {
+    return mCanReverse;
+  }
+
+  /** Whether travel runs toward the start of the recorded section. */
+  public boolean isReversed()
+  {
+    return mReversed;
   }
 }

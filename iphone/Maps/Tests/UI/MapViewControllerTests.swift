@@ -36,6 +36,36 @@ final class MapViewControllerTests: XCTestCase {
     XCTAssertNil(map.controlsManager.trackRecordingButton)
   }
 
+  func testTrackReverseAfterClosingSearch() throws {
+    let map = try XCTUnwrap(MapViewController.shared())
+    map.loadViewIfNeeded()
+    let track = try importTrack()
+    MWMRouter.stopRouting()
+    defer { MWMRouter.stopRouting() }
+    MWMRouter.subscribeToEvents()
+    BookmarksManager.shared().setElevationActivePointDistance(0, trackId: track)
+    XCTAssertEqual(MWMRouter.navigateTrack(track), .ok)
+
+    func waitForPreview() {
+      wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in MWMRouter.isRouteBuilt() }, object: nil)], timeout: 5)
+    }
+    waitForPreview()
+    let dashboard = try XCTUnwrap(map.children.compactMap { $0 as? NavigationDashboardViewController }.last)
+    let reverse = try XCTUnwrap(Mirror(reflecting: dashboard).children.first { $0.label == "reverseRoutePointsButton" }?.value as? UIButton)
+    XCTAssertFalse(reverse.isEnabled)
+    XCTAssertEqual(reverse.accessibilityValue, L("navigate_track_finish"))
+
+    XCTAssertEqual(MWMRouter.updateFollowedTrackEntry(atDistance: 40), .ok)
+    waitForPreview()
+    map.searchManager.startSearching(isRouting: false)
+    map.searchManager.close()
+    XCTAssertTrue(reverse.isEnabled)
+    reverse.sendActions(for: .touchUpInside)
+    waitForPreview()
+    XCTAssertEqual(MWMRouter.followedTrackInfo()?.isReversed, true)
+    XCTAssertEqual(reverse.accessibilityValue, L("navigate_track_start"))
+  }
+
   private func importTrack() throws -> UInt64 {
     let bookmarks = BookmarksManager.shared()
     let name = "RecordingTest-\(UUID().uuidString)"

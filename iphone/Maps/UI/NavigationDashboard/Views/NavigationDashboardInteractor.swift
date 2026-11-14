@@ -141,7 +141,11 @@ extension NavigationDashboard {
         return showRoutePoints()
 
       case .reverseRoutePoints:
-        router.reverseRoute()
+        if router.hasTrackNavigationSession() {
+          showTrackError(router.reverseFollowedTrack())
+        } else {
+          router.reverseRoute()
+        }
         return showRoutePoints()
 
       case .updateVisibleAreaInsets(let insets):
@@ -166,7 +170,7 @@ extension NavigationDashboard {
     }
 
     private func showRoutePoints() -> Response {
-      let points = router.followedTrackInfo().map { RoutePoints(trackName: $0.name) }
+      let points = router.followedTrackInfo().map(RoutePoints.init(track:))
         ?? RoutePoints(points: router.points())
       return .show(points: points, routerType: router.renderType())
     }

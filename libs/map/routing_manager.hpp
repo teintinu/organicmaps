@@ -27,7 +27,6 @@
 
 #include <chrono>
 #include <cstdint>
-#include <expected>
 #include <functional>
 #include <map>
 #include <memory>
@@ -72,6 +71,10 @@ struct FollowedTrackInfo
   std::string m_name;
   /// Captured distance along the full source, independent of the map selection.
   double m_entryDistanceM = 0.0;
+  /// Travel runs toward the beginning of the recorded section.
+  bool m_reversed = false;
+  /// The connected section also has geometry on the opposite side of the entry.
+  bool m_canReverse = false;
   /// The router type the track is followed and rendered as (never Transit or Ruler).
   routing::RouterType m_profile = routing::RouterType::Vehicle;
 };
@@ -82,7 +85,7 @@ enum class FollowTrackResult
   Ok,
   /// The requested live source track does not exist.
   NoTrack,
-  /// Active navigation or a pending Start prevents this operation.
+  /// The current build or navigation state prevents this operation.
   Busy,
   /// The selection does not identify a valid occurrence in its source.
   InvalidSelection,
@@ -207,15 +210,19 @@ public:
   void FollowRoute();
   void CloseRouting(bool removeRoutePoints);
 
-  // Capture the selected connected remainder. Active navigation and a pending Start return Busy.
+  // Follow the connected section forward, or backward when only that direction has geometry.
+  // Active navigation and a pending Start return Busy.
   // Requires routing initialization. Accepted previews use the route-building callbacks.
   FollowTrackResult NavigateTrack(kml::TrackId trackId);
-  // The following three commands require a captured session.
+  // The following preview edits require a captured session.
   // Return to the captured preview.
   FollowTrackResult ResetFollowedTrackToPlanning();
   // Clamp a finite source distance to the full track, preserving profile and viewport.
+  // Keep the direction unless only the opposite side of the entry has geometry.
   // At a gap the exact accepted distance keeps its section. Other distances use source order.
   FollowTrackResult UpdateFollowedTrackEntryAt(double distanceM);
+  // Reverse a completed preview at its captured entry.
+  FollowTrackResult ReverseFollowedTrack();
   // Change this preview's profile (Vehicle, Bicycle or Pedestrian) without writing global defaults.
   FollowTrackResult SetFollowTrackProfile(routing::RouterType type);
   bool IsFollowingTrack() const { return m_followSession.has_value(); }
@@ -227,9 +234,6 @@ public:
   {
     return m_followSession ? &m_followSession->m_info : nullptr;
   }
-  // Whether the live selection has a usable connected remainder, independent of GPS or
-  // conflicting navigation. NavigateTrack still validates before replacing the session.
-  bool HasNavigableTrackSelection(kml::TrackId trackId) const;
   // Profile for route presentation and camera behavior, including a track session's local choice.
   routing::RouterType GetRenderRouterType() const;
 
@@ -367,20 +371,12 @@ private:
 
   void SetRouterImpl(routing::RouterType type);
 
-  struct SelectedTrack
-  {
-    Track const * m_track;
-    TrackSourcePosition m_entry;
-    double m_distanceM;
-  };
-
-  // Resolve a live source selection without changing the session.
-  std::expected<SelectedTrack, FollowTrackResult> CheckTrackFollowable(kml::TrackId trackId) const;
   FollowTrackResult CheckFollowedTrackEditable(bool allowFollowing = false) const;
   bool IsPreviewingTrack() const { return m_followSession && !IsRoutingFollowing(); }
 
   FollowTrackResult BuildFollowedTrack(std::shared_ptr<Track const> source, TrackSourcePosition entry,
-                                       double entryDistanceM, routing::RouterType profile, bool keepViewport = false);
+                                       double entryDistanceM, bool reverse, routing::RouterType profile,
+                                       bool keepViewport = false);
   void InstallFollowedTrack(FollowSession session, bool keepViewport = false);
   void BuildFollowedTrackPreview(std::optional<m2::PointD> const & position);
   std::optional<m2::PointD> GetLatestGpsPosition() const;

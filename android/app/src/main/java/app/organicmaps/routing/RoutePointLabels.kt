@@ -12,3 +12,7 @@ fun pickTitle(pointType: RouteMarkType, isReplace: Boolean): Int = when (pointTy
     RouteMarkType.Intermediate -> if (isReplace) R.string.change_stop_along_route else R.string.route_add_destination
     RouteMarkType.Finish -> if (isReplace) R.string.change_destination else R.string.choose_destination
 }
+
+@StringRes
+fun trackDestination(reversed: Boolean): Int =
+    if (reversed) R.string.navigate_track_start else R.string.navigate_track_finish
