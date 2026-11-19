@@ -52,7 +52,6 @@ NS_SWIFT_NAME(ActionBarButton)
                                 isSelected:(BOOL)isSelected
                                  isPrimary:(BOOL)isPrimary;
 
-- (void)setBookmarkButtonState:(MWMBookmarksButtonState)state;
 - (void)setDownloadAccessibilityLabel:(NSString *)label;
 - (void)setDownloadAccessibilityProgress:(CGFloat)progress;
 
