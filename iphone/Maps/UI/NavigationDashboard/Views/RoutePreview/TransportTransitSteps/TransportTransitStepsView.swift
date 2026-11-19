@@ -80,6 +80,18 @@ private extension MWMRouterTransitStepInfo {
       title = L("routing_accessibility_tram")
     case .bus:
       title = L("routing_accessibility_bus")
+    case .ferry:
+      title = L("routing_accessibility_ferry")
+    case .cableTram:
+      title = L("routing_accessibility_cable_tram")
+    case .aerialLift:
+      title = L("routing_accessibility_aerial_lift")
+    case .funicular:
+      title = L("routing_accessibility_funicular")
+    case .airService:
+      title = L("routing_accessibility_air_service")
+    case .waterService:
+      title = L("routing_accessibility_water_service")
     case .ruler:
       title = L("placepage_distance")
     }

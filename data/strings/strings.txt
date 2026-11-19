@@ -47321,6 +47321,54 @@ pl = Autobus
 ru = Автобус
 uk = Автобус
 
+[routing_accessibility_ferry]
+comment = VoiceOver name of a ferry step in an iOS public transport route preview.
+tags = apple-maps
+en = Ferry
+pl = Prom
+ru = Паром
+uk = Пором
+
+[routing_accessibility_cable_tram]
+comment = VoiceOver name of a cable tram step in an iOS public transport route preview.
+tags = apple-maps
+en = Cable tram
+pl = Tramwaj linowy
+ru = Канатный трамвай
+uk = Канатний трамвай
+
+[routing_accessibility_aerial_lift]
+comment = VoiceOver name of an aerial lift step in an iOS public transport route preview.
+tags = apple-maps
+en = Aerial lift
+pl = Kolej linowa
+ru = Канатная дорога
+uk = Канатна дорога
+
+[routing_accessibility_funicular]
+comment = VoiceOver name of a funicular step in an iOS public transport route preview.
+tags = apple-maps
+en = Funicular
+pl = Kolej linowo-terenowa
+ru = Фуникулёр
+uk = Фунікулер
+
+[routing_accessibility_air_service]
+comment = VoiceOver name of an air service step in an iOS public transport route preview.
+tags = apple-maps
+en = Air service
+pl = Transport lotniczy
+ru = Авиасообщение
+uk = Авіасполучення
+
+[routing_accessibility_water_service]
+comment = VoiceOver name of a water service step in an iOS public transport route preview.
+tags = apple-maps
+en = Water service
+pl = Transport wodny
+ru = Водный транспорт
+uk = Водний транспорт
+
 [navigation_accessibility_more_controls]
 comment = VoiceOver name of the collapsed controls button during iOS navigation.
 tags = apple-maps
