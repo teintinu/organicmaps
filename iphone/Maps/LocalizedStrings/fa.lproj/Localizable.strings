@@ -1064,7 +1064,7 @@
 /* Prompt for stopping a track recording. */
 "stop_track_recording" = "توقف ضبط مسیر";
 
-/* Subtitle of the recording Place Page, title of the home widget, and VoiceOver label of the iOS map control. */
+/* Subtitle of the place page of the track being recorded, and the name and title of the home screen widget. */
 "track_recording_title" = "ضبط مسیر";
 
 /* Message for the toast when saving the track recording is finished but nothing to save. */

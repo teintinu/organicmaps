@@ -850,7 +850,7 @@
     <string name="start_track_recording">Rekord Track</string>
     <!-- Prompt for stopping a track recording. -->
     <string name="stop_track_recording">Waqqaf ir-reġistrazzjoni tal-korsa</string>
-    <!-- Subtitle of the recording Place Page, title of the home widget, and VoiceOver label of the iOS map control. -->
+    <!-- Subtitle of the place page of the track being recorded, and the name and title of the home screen widget. -->
     <string name="track_recording_title">Irrekordjar tat-Traċċa</string>
     <!-- Message for the toast when saving the track recording is finished but nothing to save. -->
     <string name="track_recording_toast_nothing_to_save">Il-Korsija hija vojta - xejn x’ tissejvja</string>
