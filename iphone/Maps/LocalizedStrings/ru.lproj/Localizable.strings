@@ -1389,6 +1389,24 @@
 /* VoiceOver name of a bus step in an iOS public transport route preview. */
 "routing_accessibility_bus" = "Автобус";
 
+/* VoiceOver name of a ferry step in an iOS public transport route preview. */
+"routing_accessibility_ferry" = "Паром";
+
+/* VoiceOver name of a cable tram step in an iOS public transport route preview. */
+"routing_accessibility_cable_tram" = "Канатный трамвай";
+
+/* VoiceOver name of an aerial lift step in an iOS public transport route preview. */
+"routing_accessibility_aerial_lift" = "Канатная дорога";
+
+/* VoiceOver name of a funicular step in an iOS public transport route preview. */
+"routing_accessibility_funicular" = "Фуникулёр";
+
+/* VoiceOver name of an air service step in an iOS public transport route preview. */
+"routing_accessibility_air_service" = "Авиасообщение";
+
+/* VoiceOver name of a water service step in an iOS public transport route preview. */
+"routing_accessibility_water_service" = "Водный транспорт";
+
 /* VoiceOver name of the collapsed controls button during iOS navigation. */
 "navigation_accessibility_more_controls" = "Больше элементов навигации";
 

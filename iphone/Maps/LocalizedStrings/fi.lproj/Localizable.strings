@@ -1389,6 +1389,24 @@
 /* VoiceOver name of a bus step in an iOS public transport route preview. */
 "routing_accessibility_bus" = "Bus";
 
+/* VoiceOver name of a ferry step in an iOS public transport route preview. */
+"routing_accessibility_ferry" = "Ferry";
+
+/* VoiceOver name of a cable tram step in an iOS public transport route preview. */
+"routing_accessibility_cable_tram" = "Cable tram";
+
+/* VoiceOver name of an aerial lift step in an iOS public transport route preview. */
+"routing_accessibility_aerial_lift" = "Aerial lift";
+
+/* VoiceOver name of a funicular step in an iOS public transport route preview. */
+"routing_accessibility_funicular" = "Funicular";
+
+/* VoiceOver name of an air service step in an iOS public transport route preview. */
+"routing_accessibility_air_service" = "Air service";
+
+/* VoiceOver name of a water service step in an iOS public transport route preview. */
+"routing_accessibility_water_service" = "Water service";
+
 /* VoiceOver name of the collapsed controls button during iOS navigation. */
 "navigation_accessibility_more_controls" = "More navigation controls";
 
