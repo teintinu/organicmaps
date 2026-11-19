@@ -40029,7 +40029,7 @@ zh-Hans = 停止轨迹记录
 zh-Hant = 停止軌跡記錄
 
 [track_recording_title]
-comment = Subtitle of the recording Place Page, title of the home widget, and VoiceOver label of the iOS map control.
+comment = Subtitle of the place page of the track being recorded, and the name and title of the home screen widget.
 tags = android-app,apple-maps
 en = Track Recording
 af = Spooropname
