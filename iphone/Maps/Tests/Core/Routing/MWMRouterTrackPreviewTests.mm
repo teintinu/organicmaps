@@ -4,6 +4,7 @@
 #import "MWMLocationManager.h"
 #import "MWMMapViewControlsManager.h"
 #import "MWMNavigationDashboardManager.h"
+#import "MWMPlacePageManagerHelper.h"
 #import "MWMRoutePoint+CPP.h"
 #import "MWMRouter.h"
 #import "MapViewController.h"
@@ -14,6 +15,7 @@
 #include <CoreApi/ElevationProfileData.h>
 #include <CoreApi/Framework.h>
 #include <CoreApi/MWMBookmarksManager.h>
+#include <CoreApi/PlacePageData.h>
 #include <CoreApi/RouteElevationPreviewData.h>
 
 #include "geometry/mercator.hpp"
@@ -262,6 +264,32 @@
   XCTAssertTrue([MWMRouter isOnRoute]);
   XCTAssertEqual(manager.RoutingSession().GetRoute(), route);
   XCTAssertEqual(route->GetTotalDistanceMeters(), length);
+}
+
+- (void)testPlacePageDeleteOnlyStopsNavigationForTheFollowedTrack
+{
+  auto & framework = GetFramework();
+  auto const other = [self createPreview];
+  [self waitForPreview];
+  auto const followed = [self createPreview];
+  [self waitForPreview];
+  XCTAssertTrue(framework.GetRoutingManager().RoutingSession().EnableFollowMode());
+  [MWMRouter showNavigationMapControls];
+
+  id<IOpeningHoursLocalization> localization =
+      [NSClassFromString(@"Organic_Maps__Debug_.OpeinigHoursLocalization") new];
+  XCTAssertNotNil(localization);
+  for (auto const id : {other, followed})
+  {
+    framework.ShowTrack(id);
+    auto data = [[PlacePageData alloc] initWithLocalizationProvider:localization];
+    XCTAssertTrue([MWMRouter isOnRoute]);
+    [MWMPlacePageManagerHelper removeTrack:data];
+    [self drainMainQueue];
+    XCTAssertFalse([MWMBookmarksManager.sharedManager hasTrack:id]);
+    XCTAssertEqual([MWMRouter isOnRoute], id == other);
+  }
+  XCTAssertEqual(MWMNavigationDashboardManager.sharedManager.state, MWMNavigationDashboardStateClosed);
 }
 
 - (void)testDeferredDeletionDoesNotCancelAReplacementPreview

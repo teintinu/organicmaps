@@ -204,7 +204,13 @@ using namespace storage;
 
 - (void)removeTrack:(PlacePageData *)data
 {
-  [[MWMBookmarksManager sharedManager] deleteTrack:data.trackData.trackId];
+  auto const trackId = data.trackData.trackId;
+  auto bookmarks = MWMBookmarksManager.sharedManager;
+  BOOL const existed = [bookmarks hasTrack:trackId];
+  [bookmarks deleteTrack:trackId];
+  auto followedTrack = [MWMRouter followedTrackInfo];
+  if (existed && followedTrack && followedTrack.trackId == trackId && [MWMRouter isOnRoute])
+    [MWMRouter stopRouting];
 }
 
 - (void)call:(PlacePagePhone *)phone
