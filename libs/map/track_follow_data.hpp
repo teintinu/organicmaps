@@ -16,6 +16,7 @@ struct TrackSourcePosition
   double m_fraction = 0.0;
 
   auto operator<=>(TrackSourcePosition const &) const = default;
+  double GetDistanceMeters(Track const & track) const;
 };
 
 // Resolve the selected source occurrence using both its coordinate and finite chart distance.
@@ -29,8 +30,12 @@ TrackSourcePosition ResolveTrackEntryAt(Track const & track, double distanceFrom
 bool HasRemainingTrackGeometry(kml::MultiGeometry const & geometry, TrackSourcePosition const & entry,
                                bool reverse = false);
 
-// The farthest line connected to the entry line in the direction of travel.
-size_t GetTrackSectionEndLine(kml::MultiGeometry const & geometry, size_t line, bool reverse);
+// The endpoint reached from this line in the requested direction, stopping at a gap.
+TrackSourcePosition GetTrackSectionEnd(kml::MultiGeometry const & geometry, size_t line, bool reverse);
+
+// Reverse a usable preview from the same occurrence, or the other endpoint of a closed section.
+std::optional<TrackSourcePosition> GetReverseTrackEntry(kml::MultiGeometry const & geometry,
+                                                        TrackSourcePosition const & entry, bool reversed);
 
 // Prepare the connected remainder and its stops in travel order, preserving altitude availability.
 // Returns nullopt when no horizontal geometry remains in that direction.

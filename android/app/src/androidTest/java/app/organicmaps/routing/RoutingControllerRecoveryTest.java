@@ -38,6 +38,7 @@ import app.organicmaps.sdk.routing.RouteMarkData;
 import app.organicmaps.sdk.routing.RouteMarkType;
 import app.organicmaps.sdk.routing.RoutingController;
 import app.organicmaps.sdk.routing.RoutingListener;
+import app.organicmaps.widget.placepage.ElevationProfileChart;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -394,6 +395,28 @@ public class RoutingControllerRecoveryTest
   }
 
   @Test
+  public void reversingAClosedTrackMovesTheChartMarkerToItsFinish() throws Exception
+  {
+    try (ImportedTrack track = new ImportedTrack("0,51.47,100 0,51.48,120 0.01,51.48,150 0,51.47,100");
+         ActivityScenario<MwmActivity> scenario = launchMap())
+    {
+      onMain(() -> assertEquals(FollowTrackResult.Ok, mController.navigateTrack(track.id)));
+      await("Loop preview did not finish building", mController::isBuilt);
+      scenario.onActivity(activity -> {
+        final View reverse = activity.findViewById(R.id.reverse_route_btn);
+        assertTrue(reverse.isEnabled());
+        assertTrue(reverse.performClick());
+      });
+      await("Reversed loop did not finish building", mController::isBuilt);
+      scenario.onActivity(activity -> {
+        final ElevationProfileChart chart = activity.findViewById(R.id.elevation_profile_chart);
+        assertTrue(mController.getFollowedTrackInfo().isReversed());
+        assertEquals(chart.getXChartMax(), chart.getHighlightX(), 0f);
+      });
+    }
+  }
+
+  @Test
   public void deletingTheTrackCategoryEndsItsPreview() throws Exception
   {
     try (ImportedTrack track = new ImportedTrack())
@@ -568,14 +591,19 @@ public class RoutingControllerRecoveryTest
 
     ImportedTrack() throws Exception
     {
+      this("0,51.47,100 0,51.48,200");
+    }
+
+    ImportedTrack(String coordinates) throws Exception
+    {
       try (FileWriter writer = new FileWriter(source))
       {
         writer.write(String.format("""
             <kml xmlns="http://www.opengis.net/kml/2.2"><Document>
             <name>%s</name><Placemark><name>Trail 🏔</name>
-            <LineString><coordinates>0,51.47,100 0,51.48,200</coordinates></LineString>
+            <LineString><coordinates>%s</coordinates></LineString>
             </Placemark></Document></kml>
-            """, source.getName()));
+            """, source.getName(), coordinates));
       }
       onMain(() -> BookmarkManager.INSTANCE.loadBookmarksFile(source.getAbsolutePath(), false));
       await("Track was not imported", () -> category() != null && category().getTracksCount() == 1);

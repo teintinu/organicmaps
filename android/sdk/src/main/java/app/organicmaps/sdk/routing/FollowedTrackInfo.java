@@ -44,7 +44,7 @@ public final class FollowedTrackInfo
     return mEntryDistanceMeters;
   }
 
-  /** Whether the connected section extends in the opposite direction from this entry. */
+  /** Whether the selected entry supports travel in the opposite direction. */
   public boolean canReverse()
   {
     return mCanReverse;

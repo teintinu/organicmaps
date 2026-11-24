@@ -1087,7 +1087,8 @@ FollowTrackResult RoutingManager::BuildFollowedTrack(std::shared_ptr<Track const
                                                      double entryDistanceM, bool reverse, RouterType profile,
                                                      bool keepViewport)
 {
-  auto prepared = BuildTrackFollowingData(source->GetData(), entry, reverse);
+  auto const & data = source->GetData();
+  auto prepared = BuildTrackFollowingData(data, entry, reverse);
   if (!prepared)
     return FollowTrackResult::NoRemainingGeometry;
 
@@ -1096,10 +1097,11 @@ FollowTrackResult RoutingManager::BuildFollowedTrack(std::shared_ptr<Track const
   info.m_name = source->GetName();
   info.m_entryDistanceM = entryDistanceM;
   info.m_reversed = reverse;
-  info.m_canReverse = HasRemainingTrackGeometry(source->GetData().m_geometry, entry, !reverse);
+  auto const reverseEntry = GetReverseTrackEntry(data.m_geometry, entry, reverse);
+  info.m_canReverse = reverseEntry.has_value();
   info.m_profile = profile;
 
-  InstallFollowedTrack({std::move(info), std::move(source), entry,
+  InstallFollowedTrack({std::move(info), std::move(source), entry, reverseEntry,
                         std::make_shared<routing::TrackFollowingData const>(std::move(*prepared))},
                        keepViewport);
   return FollowTrackResult::Ok;
@@ -1188,8 +1190,13 @@ FollowTrackResult RoutingManager::ReverseFollowedTrack()
     return FollowTrackResult::Busy;
 
   auto const & session = *m_followSession;
-  return BuildFollowedTrack(session.m_source, session.m_entry, session.m_info.m_entryDistanceM,
-                            !session.m_info.m_reversed, session.m_info.m_profile);
+  if (!session.m_reverseEntry)
+    return FollowTrackResult::NoRemainingGeometry;
+
+  auto const & entry = *session.m_reverseEntry;
+  double const distance =
+      entry == session.m_entry ? session.m_info.m_entryDistanceM : entry.GetDistanceMeters(*session.m_source);
+  return BuildFollowedTrack(session.m_source, entry, distance, !session.m_info.m_reversed, session.m_info.m_profile);
 }
 
 FollowTrackResult RoutingManager::SetFollowTrackProfile(RouterType type)
@@ -1839,7 +1846,7 @@ std::optional<RouteElevationData> RoutingManager::GetRouteElevationData() const
     auto const & source = *session.m_source;
     auto const entryLine = session.m_entry.m_line;
     bool const reverse = session.m_info.m_reversed;
-    auto const endLine = GetTrackSectionEndLine(source.GetData().m_geometry, entryLine, reverse);
+    auto const endLine = GetTrackSectionEnd(source.GetData().m_geometry, entryLine, reverse).m_line;
     double const distanceOnLine = session.m_info.m_entryDistanceM - source.GetCumulativeLengths()[entryLine].front();
     ElevationInfo::Section const section{entryLine, distanceOnLine, endLine, reverse};
     auto const [statistics, elevationInfo] = source.GetStatisticsAndElevationInfo(section);

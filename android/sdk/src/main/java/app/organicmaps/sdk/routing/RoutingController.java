@@ -720,7 +720,8 @@ public class RoutingController
   }
 
   /**
-   * Reverses a completed preview at its captured entry. Requires {@link #isFollowingTrack()}.
+   * Reverses a completed preview at the selected location. A closed trailhead switches chart endpoints.
+   * Requires {@link #isFollowingTrack()}.
    * Returns {@link FollowTrackResult#Busy} while building or navigating.
    */
   @NonNull

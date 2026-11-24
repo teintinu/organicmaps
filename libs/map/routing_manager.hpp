@@ -73,7 +73,7 @@ struct FollowedTrackInfo
   double m_entryDistanceM = 0.0;
   /// Travel runs toward the beginning of the recorded section.
   bool m_reversed = false;
-  /// The connected section also has geometry on the opposite side of the entry.
+  /// The selected entry supports travel in the opposite direction.
   bool m_canReverse = false;
   /// The router type the track is followed and rendered as (never Transit or Ruler).
   routing::RouterType m_profile = routing::RouterType::Vehicle;
@@ -222,7 +222,7 @@ public:
   // Keep the direction unless only the opposite side of the entry has geometry.
   // At a gap the exact accepted distance keeps its section. Other distances use source order.
   FollowTrackResult UpdateFollowedTrackEntryAt(double distanceM);
-  // Reverse a completed preview at its captured entry.
+  // Reverse at the captured entry. A closed trailhead switches to its other endpoint occurrence.
   FollowTrackResult ReverseFollowedTrack();
   // Change this preview's profile (Vehicle, Bicycle or Pedestrian) without writing global defaults.
   FollowTrackResult SetFollowTrackProfile(routing::RouterType type);
@@ -461,6 +461,8 @@ private:
     FollowedTrackInfo m_info;
     std::shared_ptr<Track const> m_source;
     TrackSourcePosition m_entry;
+    // A closed trailhead has two source occurrences at the same location.
+    std::optional<TrackSourcePosition> m_reverseEntry;
     std::shared_ptr<routing::TrackFollowingData const> m_data;
     bool m_keepViewport = false;
     bool m_startWhenReady = false;

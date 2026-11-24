@@ -1562,6 +1562,48 @@ UNIT_TEST(RoutingManager_NavigateTrackFromFinish)
   TEST_EQUAL(manager.RoutingSession().GetRoute(), route, ());
 }
 
+UNIT_TEST(RoutingManager_ReverseClosedSectionFromTrailhead)
+{
+  AsyncBuildFixture fixture;
+  auto & manager = fixture.m_framework.GetRoutingManager();
+  auto & bookmarks = fixture.m_framework.GetBookmarkManager();
+  auto const a = MeterPoint(0, 0), b = MeterPoint(100, 0), c = MeterPoint(100, 100), d = MeterPoint(0, 100);
+  kml::TrackData source;
+  source.m_layers.emplace_back();
+  source.m_geometry.AddLine({{MeterPoint(-200, 0), 100}, {MeterPoint(-100, 0), 100}});
+  source.m_geometry.AddTimestamps({});
+  source.m_geometry.AddLine({{a, 100}, {b, 110}, {c, 120}});
+  source.m_geometry.AddTimestamps({});
+  source.m_geometry.AddLine({{c, 120}, {d, 130}, {a, 140}});
+  source.m_geometry.AddTimestamps({});
+  source.m_geometry.AddLine({{MeterPoint(500, 0), 100}, {MeterPoint(600, 0), 100}});
+  source.m_geometry.AddTimestamps({});
+  auto const id = bookmarks.GetEditSession().CreateTrack(std::move(source))->GetId();
+  auto const & lengths = bookmarks.GetTrack(id)->GetCumulativeLengths();
+  double const start = lengths[1].front(), finish = lengths[2].back();
+  bookmarks.SetTrackSelectionInfo({id, a, start}, false);
+  TEST_EQUAL(manager.NavigateTrack(id), FollowTrackResult::Ok, ());
+  auto const checkLap = [&](bool reverse)
+  {
+    fixture.WaitForBuildResult();
+    auto const & info = *manager.GetFollowedTrackInfo();
+    TEST(info.m_canReverse, ());
+    TEST_EQUAL(info.m_reversed, reverse, ());
+    TEST_EQUAL(info.m_entryDistanceM, reverse ? finish : start, ());
+    auto const & line = manager.RoutingSession().GetRoute()->GetPoly();
+    TEST_EQUAL(line.GetPoint(1), a, ());
+    TEST_EQUAL(line.GetPoint(2), reverse ? d : b, ());
+    TEST_EQUAL(line.Back(), a, ());
+    TEST_ALMOST_EQUAL_ABS(GetFollowedTrackLengthMeters(manager), finish - start, 0.01, ());
+    TEST_EQUAL(bookmarks.GetElevationActivePoint(id), start, ());
+  };
+  checkLap(false);
+  TEST_EQUAL(manager.ReverseFollowedTrack(), FollowTrackResult::Ok, ());
+  checkLap(true);
+  TEST_EQUAL(manager.ReverseFollowedTrack(), FollowTrackResult::Ok, ());
+  checkLap(false);
+}
+
 UNIT_TEST(RoutingManager_TrackPreviewGpsDoesNotRebuildOrPassStops)
 {
   AsyncBuildFixture fixture;
@@ -2308,7 +2350,7 @@ UNIT_TEST(RoutingManager_TrackPreviewEntryDistancePreservesDirection)
   TEST_EQUAL(manager.UpdateFollowedTrackEntryAt(0.0), FollowTrackResult::Ok, ());
   fixture.WaitForBuildResult();
   TEST(!manager.GetFollowedTrackInfo()->m_reversed, ());
-  TEST(!manager.GetFollowedTrackInfo()->m_canReverse, ());
+  TEST(manager.GetFollowedTrackInfo()->m_canReverse, ());
   TEST_EQUAL(manager.GetFollowedTrackInfo()->m_entryDistanceM, 0.0, ());
   TEST_ALMOST_EQUAL_ABS(GetFollowedTrackLengthMeters(manager), 2.0 * legLength, 0.01, ());
   TEST_EQUAL(notifications, 0, ());
@@ -2881,6 +2923,7 @@ UNIT_TEST(RoutingManager_NavigateTrackDistinguishesShortRemainderFromLoopFinish)
   TEST_EQUAL(manager.NavigateTrack(id), FollowTrackResult::Ok, ());
   fixture.WaitForBuildResult();
   TEST(manager.GetFollowedTrackInfo()->m_reversed, ());
+  TEST(manager.GetFollowedTrackInfo()->m_canReverse, ());
   TEST_ALMOST_EQUAL_ABS(GetFollowedTrackLengthMeters(manager), length, 0.01, ());
   TEST_EQUAL(manager.GetFollowedTrackInfo()->m_entryDistanceM, length, ());
 }

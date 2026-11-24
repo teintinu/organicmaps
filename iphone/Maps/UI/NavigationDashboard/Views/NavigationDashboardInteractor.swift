@@ -142,7 +142,13 @@ extension NavigationDashboard {
 
       case .reverseRoutePoints:
         if router.hasTrackNavigationSession() {
-          showTrackError(router.reverseFollowedTrack())
+          let result = router.reverseFollowedTrack()
+          if result == .ok {
+            // At a loop trailhead the new preview selects the other end of the chart.
+            routeElevationActivePointDistance = nil
+          } else {
+            showTrackError(result)
+          }
         } else {
           router.reverseRoute()
         }

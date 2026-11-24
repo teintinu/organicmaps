@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Refusals leave the preview and selection unchanged.
 + (MWMFollowTrackResult)updateFollowedTrackEntryAtDistance:(double)distance
     NS_SWIFT_NAME(updateFollowedTrackEntry(atDistance:));
-/// Requires a captured track session. Reverses its completed preview at the selected entry.
+/// Reverses the completed track preview at the selected location. A closed trailhead switches chart endpoints.
 + (MWMFollowTrackResult)reverseFollowedTrack;
 /// Switches the preview profile without changing the persisted default. Refusals preserve the session.
 + (MWMFollowTrackResult)setFollowTrackProfile:(MWMRouterType)type;

@@ -165,6 +165,12 @@ std::optional<StopProjection> ProjectStop(kml::MultiGeometry const & geometry, m
 }
 }  // namespace
 
+double TrackSourcePosition::GetDistanceMeters(Track const & track) const
+{
+  auto const & lengths = track.GetCumulativeLengths()[m_line];
+  return std::lerp(lengths[m_segment], lengths[m_segment + 1], m_fraction);
+}
+
 TrackSourcePosition ResolveTrackEntryAt(Track const & track, double distanceFromBeginningM)
 {
   auto const & lengths = track.GetCumulativeLengths();
@@ -330,15 +336,31 @@ routing::TrackFollowingData PrepareTrackRange(kml::TrackData const & source, Sou
 }
 }  // namespace
 
-size_t GetTrackSectionEndLine(kml::MultiGeometry const & geometry, size_t line, bool reverse)
+TrackSourcePosition GetTrackSectionEnd(kml::MultiGeometry const & geometry, size_t line, bool reverse)
 {
   if (reverse)
+  {
     while (line > 0 && IsJoinedToNext(geometry, line - 1))
       --line;
-  else
-    while (IsJoinedToNext(geometry, line))
-      ++line;
-  return line;
+    return {line, 0, 0.0};
+  }
+  while (IsJoinedToNext(geometry, line))
+    ++line;
+  return {line, geometry.m_lines[line].size() - 2, 1.0};
+}
+
+std::optional<TrackSourcePosition> GetReverseTrackEntry(kml::MultiGeometry const & geometry,
+                                                        TrackSourcePosition const & entry, bool reversed)
+{
+  if (HasRemainingTrackGeometry(geometry, entry, !reversed))
+    return entry;
+
+  // The selected entry can be within tolerance of both endpoints of an open section.
+  auto const start = GetTrackSectionEnd(geometry, entry.m_line, !reversed);
+  auto const finish = GetTrackSectionEnd(geometry, entry.m_line, reversed);
+  if (SamePosition(PointAtPosition(geometry, start).GetPoint(), PointAtPosition(geometry, finish).GetPoint()))
+    return finish;
+  return std::nullopt;
 }
 
 std::optional<routing::TrackFollowingData> BuildTrackFollowingData(kml::TrackData const & source,
@@ -348,11 +370,11 @@ std::optional<routing::TrackFollowingData> BuildTrackFollowingData(kml::TrackDat
   if (!HasRemainingTrackGeometry(geometry, entry, reverse))
     return std::nullopt;
 
-  size_t const line = GetTrackSectionEndLine(geometry, entry.m_line, reverse);
+  auto const finish = GetTrackSectionEnd(geometry, entry.m_line, reverse);
   if (!reverse)
-    return PrepareTrackRange(source, entry, {line, geometry.m_lines[line].size() - 2, 1.0});
+    return PrepareTrackRange(source, entry, finish);
 
-  auto result = PrepareTrackRange(source, {line, 0, 0.0}, entry);
+  auto result = PrepareTrackRange(source, finish, entry);
   std::ranges::reverse(result.m_points);
   std::ranges::reverse(result.m_stopPointIndexes);
   for (auto & index : result.m_stopPointIndexes)

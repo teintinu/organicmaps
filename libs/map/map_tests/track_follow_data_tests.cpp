@@ -331,6 +331,34 @@ UNIT_TEST(TrackFollowData_JoinedTrackEntryDoesNotInventAltitudeExcursion)
   TEST_EQUAL(reverse->m_points[2].GetAltitude(), 50, ());
 }
 
+UNIT_TEST(TrackFollowData_ReverseNearTrailheadRequiresClosedSection)
+{
+  for (double const endpointGapM : {0.0, 0.016})
+  {
+    kml::TrackData source;
+    source.m_geometry.AddLine({{MeterPoint(0, 0), 100}, {MeterPoint(100, 0), 110}, {MeterPoint(endpointGapM, 0), 100}});
+    source.m_geometry.AddTimestamps({});
+    auto const track = MakeSourceTrack(source);
+    // At the equator this entry is within the position tolerance of both ends in either case.
+    auto const entry = ResolveTrackEntryAt(track, 0.008);
+    auto const finish = TrackSourcePosition{0, 1, 1.0};
+    auto const expected = endpointGapM == 0.0 ? std::optional(finish) : std::nullopt;
+    TEST(GetReverseTrackEntry(source.m_geometry, entry, false) == expected, (endpointGapM));
+  }
+}
+
+UNIT_TEST(TrackFollowData_ReverseKeepsAnInteriorVisitToTheTrailhead)
+{
+  auto const trailhead = MeterPoint(0, 0);
+  kml::TrackData source;
+  source.m_geometry.AddLine(
+      {{trailhead, 100}, {MeterPoint(100, 0), 110}, {trailhead, 100}, {MeterPoint(0, 100), 120}, {trailhead, 100}});
+  source.m_geometry.AddTimestamps({});
+  auto const track = MakeSourceTrack(source);
+  auto const midway = ResolveTrackEntryAt(track, track.GetCumulativeLengths().front()[2]);
+  TEST(GetReverseTrackEntry(source.m_geometry, midway, false) == midway, ());
+}
+
 UNIT_TEST(TrackFollowData_ReverseWaypointRouteKeepsCollocatedStops)
 {
   kml::TrackData source;
