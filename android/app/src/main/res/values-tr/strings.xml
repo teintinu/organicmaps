@@ -963,6 +963,8 @@
     <string name="editor_level">Kat (zemin kat 0\'dır)</string>
     <!-- Start navigation along the selected track. -->
     <string name="navigate_track">Navigasyon</string>
+    <!-- Route planner label for the selected entry point on an unnamed track. -->
+    <string name="navigate_track_entry">Seçilen nokta</string>
     <!-- Track start point label. -->
     <string name="navigate_track_start">İz başlangıcı</string>
     <!-- Track finish point label. -->

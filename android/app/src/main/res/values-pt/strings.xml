@@ -967,6 +967,8 @@
     <string name="editor_level">Andar (o rés-do-chão é 0)</string>
     <!-- Start navigation along the selected track. -->
     <string name="navigate_track">Navegar</string>
+    <!-- Route planner label for the selected entry point on an unnamed track. -->
+    <string name="navigate_track_entry">Ponto selecionado</string>
     <!-- Track start point label. -->
     <string name="navigate_track_start">Início do trajeto</string>
     <!-- Track finish point label. -->

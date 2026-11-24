@@ -1248,6 +1248,9 @@
 /* Start navigation along the selected track. */
 "navigate_track" = "Leiðsögn";
 
+/* Route planner label for the selected entry point on an unnamed track. */
+"navigate_track_entry" = "Valinn punktur";
+
 /* Track start point label. */
 "navigate_track_start" = "Upphaf ferils";
 

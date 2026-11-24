@@ -952,6 +952,8 @@
     <string name="editor_level">मजला (तळमजला 0 आहे)</string>
     <!-- Start navigation along the selected track. -->
     <string name="navigate_track">नेव्हिगेट करा</string>
+    <!-- Route planner label for the selected entry point on an unnamed track. -->
+    <string name="navigate_track_entry">निवडलेला बिंदू</string>
     <!-- Track start point label. -->
     <string name="navigate_track_start">ट्रॅकची सुरुवात</string>
     <!-- Track finish point label. -->
