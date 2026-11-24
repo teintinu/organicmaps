@@ -39,7 +39,9 @@ public:
   std::vector<Lengths> const & GetCumulativeLengths() const;
   double GetDurationInSeconds() const;
 
-  std::pair<TrackStatistics, ElevationInfo const *> GetStatisticsAndElevationInfo() const;
+  // A section limits the elevation totals and extrema. Length, duration and the profile cover the full track.
+  std::pair<TrackStatistics, ElevationInfo const *> GetStatisticsAndElevationInfo(
+      std::optional<ElevationInfo::Section> elevationSection = {}) const;
   ElevationInfo const * GetElevationInfo() const;
 
   std::pair<m2::PointD, double> GetCenterPoint() const;

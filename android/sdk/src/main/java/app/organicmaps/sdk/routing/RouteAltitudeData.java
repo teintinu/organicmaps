@@ -12,22 +12,30 @@ public class RouteAltitudeData
 
   private final int mTotalAscent;
   private final int mTotalDescent;
-  private final int mMinAltitude;
-  private final int mMaxAltitude;
+
+  /** Directed sample indexes of the followed section. A fractional entry interpolates adjacent samples. */
+  public final double entryPointIndex;
+  /** A negative index denotes an ordinary route chart without a selected section. */
+  public final int finishPointIndex;
+
+  public RouteAltitudeData(@NonNull double[] distances, @NonNull int[] altitudes, int totalAscent, int totalDescent)
+  {
+    this(distances, altitudes, totalAscent, totalDescent, 0.0, -1);
+  }
 
   // Called from JNI.
   @Keep
   public RouteAltitudeData(@NonNull double[] distances, @NonNull int[] altitudes, int totalAscent, int totalDescent,
-                           int minAltitude, int maxAltitude)
+                           double entryPointIndex, int finishPointIndex)
   {
     if (distances.length != altitudes.length)
       throw new IllegalArgumentException("Arrays must have the same length");
+    this.entryPointIndex = entryPointIndex;
+    this.finishPointIndex = finishPointIndex;
     mDistances = distances;
     mAltitudes = altitudes;
     mTotalAscent = totalAscent;
     mTotalDescent = totalDescent;
-    mMinAltitude = minAltitude;
-    mMaxAltitude = maxAltitude;
   }
 
   public int getSize()
@@ -60,15 +68,5 @@ public class RouteAltitudeData
   public int getTotalDescent()
   {
     return mTotalDescent;
-  }
-
-  public int getMinAltitude()
-  {
-    return mMinAltitude;
-  }
-
-  public int getMaxAltitude()
-  {
-    return mMaxAltitude;
   }
 }

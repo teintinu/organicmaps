@@ -330,6 +330,17 @@ routing::TrackFollowingData PrepareTrackRange(kml::TrackData const & source, Sou
 }
 }  // namespace
 
+size_t GetTrackSectionEndLine(kml::MultiGeometry const & geometry, size_t line, bool reverse)
+{
+  if (reverse)
+    while (line > 0 && IsJoinedToNext(geometry, line - 1))
+      --line;
+  else
+    while (IsJoinedToNext(geometry, line))
+      ++line;
+  return line;
+}
+
 std::optional<routing::TrackFollowingData> BuildTrackFollowingData(kml::TrackData const & source,
                                                                    TrackSourcePosition const & entry, bool reverse)
 {
@@ -337,16 +348,10 @@ std::optional<routing::TrackFollowingData> BuildTrackFollowingData(kml::TrackDat
   if (!HasRemainingTrackGeometry(geometry, entry, reverse))
     return std::nullopt;
 
-  size_t line = entry.m_line;
+  size_t const line = GetTrackSectionEndLine(geometry, entry.m_line, reverse);
   if (!reverse)
-  {
-    while (IsJoinedToNext(geometry, line))
-      ++line;
     return PrepareTrackRange(source, entry, {line, geometry.m_lines[line].size() - 2, 1.0});
-  }
 
-  while (line > 0 && IsJoinedToNext(geometry, line - 1))
-    --line;
   auto result = PrepareTrackRange(source, {line, 0, 0.0}, entry);
   std::ranges::reverse(result.m_points);
   std::ranges::reverse(result.m_stopPointIndexes);

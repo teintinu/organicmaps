@@ -1835,10 +1835,17 @@ std::optional<RouteElevationData> RoutingManager::GetRouteElevationData() const
   RouteElevationData data;
   if (IsPreviewingTrack())
   {
-    auto const & source = *m_followSession->m_source;
-    auto const [statistics, elevationInfo] = source.GetStatisticsAndElevationInfo();
+    auto const & session = *m_followSession;
+    auto const & source = *session.m_source;
+    auto const entryLine = session.m_entry.m_line;
+    bool const reverse = session.m_info.m_reversed;
+    auto const endLine = GetTrackSectionEndLine(source.GetData().m_geometry, entryLine, reverse);
+    double const distanceOnLine = session.m_info.m_entryDistanceM - source.GetCumulativeLengths()[entryLine].front();
+    ElevationInfo::Section const section{entryLine, distanceOnLine, endLine, reverse};
+    auto const [statistics, elevationInfo] = source.GetStatisticsAndElevationInfo(section);
     if (!elevationInfo)
       return std::nullopt;
+    data.m_followedSection = elevationInfo->GetChartSection(section);
     data.m_elevationInfo = *elevationInfo;
     data.m_statistics = statistics;
     return data;

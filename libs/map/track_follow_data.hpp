@@ -29,6 +29,9 @@ TrackSourcePosition ResolveTrackEntryAt(Track const & track, double distanceFrom
 bool HasRemainingTrackGeometry(kml::MultiGeometry const & geometry, TrackSourcePosition const & entry,
                                bool reverse = false);
 
+// The farthest line connected to the entry line in the direction of travel.
+size_t GetTrackSectionEndLine(kml::MultiGeometry const & geometry, size_t line, bool reverse);
+
 // Prepare the connected remainder and its stops in travel order, preserving altitude availability.
 // Returns nullopt when no horizontal geometry remains in that direction.
 std::optional<routing::TrackFollowingData> BuildTrackFollowingData(kml::TrackData const & source,

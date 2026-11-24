@@ -431,7 +431,13 @@ extension ChartView: ChartInfoViewDelegate {
     for i in 0 ..< chartData.linesCount {
       let line = chartData.lineAt(i)
       guard line.type != .lineArea else { continue }
-      let y = line.values.interpolatedAltitude(at: distance)
+      let y: CGFloat
+      if let section = line.highlighted, abs(section.entry.x - chartX) <= 4 * max(chartX.ulp, section.entry.x.ulp) {
+        // Two gap endpoints can share an X coordinate but have different heights.
+        y = section.entry.y + line.minY
+      } else {
+        y = line.values.interpolatedAltitude(at: distance)
+      }
       let py = round(chartsContainerView.bounds.height * CGFloat(y - yAxisView.lowerBound) /
         CGFloat(yAxisView.upperBound - yAxisView.lowerBound))
       result.append(ChartLineInfo(color: line.color,
