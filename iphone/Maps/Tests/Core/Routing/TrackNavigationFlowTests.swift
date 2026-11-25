@@ -3,6 +3,91 @@
 import XCTest
 
 final class TrackNavigationFlowTests: XCTestCase {
+  func testReadyReadsTheAcceptedTrackEntryFromCore() throws {
+    let renderer = DashboardRendererSpy()
+    let interactor = NavigationDashboard.Interactor(presenter: NavigationDashboard.Presenter(view: renderer), router: MockRouter.self)
+    MockRouter.trackMode = true
+    MockRouter.acceptedEntryDistance = 100
+    MockRouter.elevationInfo = MockElevationProfileData()
+    MockRouter.mapPointRequests = []
+    MockRouter.entryRequests = []
+    defer {
+      interactor.invalidate()
+      MockRouter.trackMode = false
+      MockRouter.acceptedEntryDistance = nil
+      MockRouter.elevationInfo = nil
+      MockRouter.mapPointRequests = []
+      MockRouter.entryRequests = []
+    }
+    interactor.statePlanning()
+    interactor.updateMapPoint(distance: 250)
+    interactor.didFinishSelectingPoint(distance: 250)
+    interactor.stateReady()
+    // A map selection is accepted in core without going through an iOS entry wrapper.
+    MockRouter.acceptedEntryDistance = 400
+    interactor.stateReady()
+    let drained = expectation(description: "Core entry survives deferred marker restoration")
+    DispatchQueue.main.async { drained.fulfill() }
+    wait(for: [drained], timeout: 1)
+    XCTAssertEqual(try XCTUnwrap(renderer.model).routeElevationActivePointDistance, 400)
+    XCTAssertEqual(MockRouter.mapPointRequests.last, 400)
+  }
+
+  func testPendingChartSelectionSurvivesReady() throws {
+    for readyFirst in [false, true] {
+      let renderer = DashboardRendererSpy()
+      let interactor = NavigationDashboard.Interactor(presenter: NavigationDashboard.Presenter(view: renderer), router: MockRouter.self)
+      MockRouter.trackMode = true
+      MockRouter.acceptedEntryDistance = 100
+      MockRouter.elevationInfo = MockElevationProfileData()
+      MockRouter.mapPointRequests = []
+      defer {
+        interactor.invalidate()
+        MockRouter.trackMode = false
+        MockRouter.acceptedEntryDistance = nil
+        MockRouter.elevationInfo = nil
+        MockRouter.mapPointRequests = []
+      }
+      interactor.statePlanning()
+      if readyFirst {
+        interactor.stateReady()
+      }
+      interactor.updateMapPoint(distance: 250)
+      if !readyFirst {
+        interactor.stateReady()
+      }
+      let drained = expectation(description: "Pending gesture keeps its marker")
+      DispatchQueue.main.async { drained.fulfill() }
+      wait(for: [drained], timeout: 1)
+      XCTAssertEqual(MockRouter.mapPointRequests.last, 250)
+      let rendersBeforeCancellation = renderer.renderCount
+      interactor.didCancelSelectingPoint()
+      XCTAssertEqual(try XCTUnwrap(renderer.model).routeElevationActivePointDistance, 100)
+      XCTAssertEqual(renderer.renderCount, rendersBeforeCancellation)
+    }
+  }
+
+  func testTrackEntryMarkerDoesNotRequireElevations() {
+    let renderer = DashboardRendererSpy()
+    let interactor = NavigationDashboard.Interactor(presenter: NavigationDashboard.Presenter(view: renderer), router: MockRouter.self)
+    MockRouter.trackMode = true
+    MockRouter.acceptedEntryDistance = 400
+    MockRouter.elevationInfo = nil
+    MockRouter.mapPointRequests = []
+    defer {
+      interactor.invalidate()
+      MockRouter.trackMode = false
+      MockRouter.acceptedEntryDistance = nil
+      MockRouter.mapPointRequests = []
+    }
+    interactor.statePlanning()
+    interactor.stateReady()
+    let drained = expectation(description: "Marker without profile data")
+    DispatchQueue.main.async { drained.fulfill() }
+    wait(for: [drained], timeout: 1)
+    XCTAssertEqual(MockRouter.mapPointRequests.last, 400)
+  }
+
   func testTrackAndOrdinaryRoutesUseTheirPlanningModels() throws {
     let renderer = DashboardRendererSpy()
     let presenter = NavigationDashboard.Presenter(view: renderer)
@@ -538,9 +623,15 @@ final class TrackNavigationFlowTests: XCTestCase {
 
   private final class DashboardRendererSpy: NavigationDashboard.Rendering {
     private(set) var model: NavigationDashboard.ViewModel?
+    private(set) var renderCount = 0
 
     func render(_ viewModel: NavigationDashboard.ViewModel) {
       model = viewModel
+      renderCount += 1
+    }
+
+    func updateElevationActivePoint(_ distance: Double?) {
+      model?.routeElevationActivePointDistance = distance
     }
   }
 
