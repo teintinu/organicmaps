@@ -61,6 +61,20 @@ async fn meta_describes_the_instance() {
 }
 
 #[tokio::test]
+async fn readiness_endpoint_is_public() {
+    let (status, body) = call(
+        test_app(),
+        Request::builder()
+            .uri("/ready")
+            .body(Body::empty())
+            .unwrap(),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body["status"], "ok");
+}
+
+#[tokio::test]
 async fn reporting_requires_a_device_token() {
     let request = json_request(
         "POST",

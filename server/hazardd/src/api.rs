@@ -188,6 +188,7 @@ impl IntoResponse for ApiError {
 pub fn app(state: AppState) -> Router {
     Router::new()
         .route("/health", get(health))
+        .route("/ready", get(health))
         .route("/v1/meta", get(meta))
         .route("/v1/devices", post(create_device))
         .route("/v1/me", delete(delete_me))

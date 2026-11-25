@@ -46,6 +46,7 @@ gps.teintinu.com {
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/health` | liveness + database check (`degraded` → 503) |
+| GET | `/ready` | readiness (same check; used by Kubernetes probes) |
 | GET | `/v1/meta` | instance, licence, coverage, capabilities, TTLs |
 | POST | `/v1/devices` | anonymous token, 90 days |
 | DELETE | `/v1/me` | erases the device; its reports become anonymous |
