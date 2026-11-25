@@ -58,7 +58,7 @@ extension NavigationDashboard.ViewModel {
   var isBottomActionsMenuHidden: Bool { presentationStep == .hidden }
 
   var supportsElevationProfile: Bool {
-    planningMode == .navigateTrack || routerType == .pedestrian || routerType == .bicycle
+    planningMode == .navigateTrack || routerType.supportsElevationProfile
   }
 
   var canReverseRoutePoints: Bool {

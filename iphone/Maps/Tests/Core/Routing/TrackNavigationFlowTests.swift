@@ -296,25 +296,84 @@ final class TrackNavigationFlowTests: XCTestCase {
     XCTAssertEqual(MockRouter.selectionResets, 1)
   }
 
-  func testRoadRebuildClearsTheOldElevationWithBothEndpoints() throws {
-    let view = NavigationDashboardViewController()
-    let presenter = NavigationDashboard.Presenter(view: view)
-    view.loadViewIfNeeded()
+  func testReplacingTheDestinationClearsTheOldElevation() throws {
+    let renderer = DashboardRendererSpy()
+    let presenter = NavigationDashboard.Presenter(view: renderer)
     let data = RouteElevationPreviewData(trackInfo: TrackInfo.empty(), elevationInfo: MockElevationProfileData())
-    presenter.process(.show(points: .init(points: suppliedPoints), routerType: .pedestrian))
+    let originalPoints = suppliedPoints
+    presenter.process(.show(points: .init(points: originalPoints), routerType: .pedestrian))
     presenter.process(.updateState(.ready))
     presenter.process(.updateElevationInfo(data, activePointDistance: 250))
-    presenter.process(.show(points: .init(points: suppliedPoints), routerType: .bicycle))
+    XCTAssertTrue(renderer.model?.routeElevationPreviewData === data)
+
+    let replacement = MWMRoutePoint(cgPoint: CGPoint(x: 1, y: 1), title: "New destination",
+                                    subtitle: nil, type: .finish, intermediateIndex: 0)
     presenter.process(.updateState(.prepare))
-    var model = try XCTUnwrap(Mirror(reflecting: presenter).children
-      .first { $0.label == "viewModel" }?.value as? NavigationDashboard.ViewModel)
+    presenter.process(.updateState(.planning))
+    presenter.process(.show(points: .init(points: Array(originalPoints.dropLast()) + [replacement]), routerType: .pedestrian))
+    let model = try XCTUnwrap(renderer.model)
+    XCTAssertTrue(model.routePoints.hasStartAndFinish)
+    XCTAssertEqual(model.routePoints.finish?.title, "New destination")
     XCTAssertNil(model.routeElevationPreviewData)
     XCTAssertNil(model.routeElevationActivePointDistance)
-    presenter.process(.show(points: .init(points: [suppliedPoints[0]]), routerType: .bicycle))
-    model = try XCTUnwrap(Mirror(reflecting: presenter).children
-      .first { $0.label == "viewModel" }?.value as? NavigationDashboard.ViewModel)
+  }
+
+  func testRemovingTheDestinationClearsTheOldElevation() throws {
+    let renderer = DashboardRendererSpy()
+    let presenter = NavigationDashboard.Presenter(view: renderer)
+    let data = RouteElevationPreviewData(trackInfo: TrackInfo.empty(), elevationInfo: MockElevationProfileData())
+    let originalPoints = suppliedPoints
+    presenter.process(.show(points: .init(points: [originalPoints[0], originalPoints[2]]), routerType: .pedestrian))
+    presenter.process(.updateState(.ready))
+    presenter.process(.updateElevationInfo(data, activePointDistance: 250))
+    XCTAssertTrue(renderer.model?.routeElevationPreviewData === data)
+
+    presenter.process(.updateState(.prepare))
+    presenter.process(.show(points: .init(points: [originalPoints[0]]), routerType: .pedestrian))
+    let model = try XCTUnwrap(renderer.model)
+    XCTAssertFalse(model.routePoints.hasStartAndFinish)
     XCTAssertNil(model.routeElevationPreviewData)
     XCTAssertNil(model.routeElevationActivePointDistance)
+  }
+
+  func testSwitchingBetweenBicycleAndPedestrianKeepsTheChartUntilReady() throws {
+    MockRouter.trackMode = false
+    MockRouter.corePoints = suppliedPoints
+    let previousProfile = MockRouter.profile
+    defer {
+      MockRouter.profile = previousProfile
+      MockRouter.corePoints = []
+      MockRouter.onOrdinaryRebuild = nil
+      MockRouter.elevationInfo = nil
+    }
+    for (from, to): (MWMRouterType, MWMRouterType) in [(.pedestrian, .bicycle), (.bicycle, .pedestrian)] {
+      let renderer = DashboardRendererSpy()
+      let presenter = NavigationDashboard.Presenter(view: renderer)
+      let interactor = NavigationDashboard.Interactor(presenter: presenter, router: MockRouter.self)
+      MockRouter.profile = from
+      MockRouter.elevationInfo = MockElevationProfileData()
+      interactor.onRoutePointsUpdated()
+      interactor.stateReady()
+      let oldChart = try XCTUnwrap(renderer.model?.routeElevationPreviewData)
+
+      MockRouter.onOrdinaryRebuild = {
+        MockRouter.profile = to
+        interactor.statePrepare()
+        XCTAssertTrue(renderer.model?.routeElevationPreviewData === oldChart)
+        interactor.statePlanning()
+        XCTAssertTrue(renderer.model?.routeElevationPreviewData === oldChart)
+      }
+      interactor.process(.selectRouterType(to))
+      XCTAssertEqual(renderer.model?.routerType, to)
+      XCTAssertTrue(renderer.model?.routeElevationPreviewData === oldChart)
+
+      MockRouter.elevationInfo = MockElevationProfileData()
+      interactor.stateReady()
+      let newChart = try XCTUnwrap(renderer.model?.routeElevationPreviewData)
+      XCTAssertFalse(newChart === oldChart)
+      interactor.statePrepare()
+      XCTAssertNil(renderer.model?.routeElevationPreviewData)
+    }
   }
 
   func testCancellingSearchKeepsTheReadyRoadElevation() throws {
@@ -581,6 +640,7 @@ final class TrackNavigationFlowTests: XCTestCase {
     static var profileRequests: [MWMRouterType] = []
     static var globalTypeChanges = 0
     static var ordinaryRebuilds = 0
+    static var onOrdinaryRebuild: (() -> Void)?
     static var entryRequests: [Double] = []
     static var mapPointRequests: [Double] = []
     static var acceptedEntryDistance: Double?
@@ -619,7 +679,11 @@ final class TrackNavigationFlowTests: XCTestCase {
     }
 
     override class func setType(_: MWMRouterType) { globalTypeChanges += 1 }
-    override class func rebuild(withBestRouter _: Bool) { ordinaryRebuilds += 1 }
+    override class func rebuild(withBestRouter _: Bool) {
+      ordinaryRebuilds += 1
+      onOrdinaryRebuild?()
+    }
+
     static var trackMode = false
     static var corePoints: [MWMRoutePoint] = []
     override class func hasTrackNavigationSession() -> Bool { trackMode }

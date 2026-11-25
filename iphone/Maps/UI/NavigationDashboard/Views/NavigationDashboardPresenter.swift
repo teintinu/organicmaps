@@ -28,13 +28,13 @@ extension NavigationDashboard {
       case .none:
         break
 
-      case .updateState(let state):
+      case .updateState(let state, let keepElevationPreview):
         viewModel.dashboardState = state
         viewModel.navigationInfo.state = state.navigationInfo
         if state == .planning {
           viewModel.progress = 0
         }
-        if viewModel.planningMode == .default, state == .prepare || state == .planning {
+        if viewModel.planningMode == .default, !keepElevationPreview, state == .prepare || state == .planning {
           viewModel.routeElevationPreviewData = nil
           viewModel.routeElevationActivePointDistance = nil
         }

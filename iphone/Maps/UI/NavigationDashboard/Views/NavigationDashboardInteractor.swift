@@ -5,6 +5,7 @@ extension NavigationDashboard {
     private let mapViewController: MapViewController
     private let searchManager: SearchOnMapManager
     private var routeElevationActivePointDistance: Double?
+    private var keepsElevationPreviewDuringProfileSwitch = false
     private var presentationStep: NavigationDashboardModalPresentationStep = .hidden
     private var isValid = true
 
@@ -39,7 +40,7 @@ extension NavigationDashboard {
     private func resolve(_ event: Request) -> Response {
       switch event {
       case .updateState(let state):
-        return .updateState(state)
+        return .updateState(state, keepElevationPreview: keepsElevationPreviewDuringProfileSwitch)
 
       case .updateRoutePoints:
         return showRoutePoints()
@@ -51,6 +52,11 @@ extension NavigationDashboard {
           showTrackError(result)
           return showRoutePoints()
         }
+        let currentProfile = router.renderType()
+        // The rebuild reports prepare and planning before returning.
+        keepsElevationPreviewDuringProfileSwitch = currentProfile != routerType &&
+          currentProfile.supportsElevationProfile && routerType.supportsElevationProfile
+        defer { keepsElevationPreviewDuringProfileSwitch = false }
         router.setType(routerType)
         router.rebuild(withBestRouter: false)
         return .none

@@ -43,6 +43,8 @@ extension MWMRouterType: CaseIterable {
     .ruler,
   ]
 
+  var supportsElevationProfile: Bool { self == .pedestrian || self == .bicycle }
+
   func image(for isSelected: Bool) -> UIImage {
     var image: UIImage
     switch self {
