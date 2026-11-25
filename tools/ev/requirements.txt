@@ -1,0 +1,3 @@
+# Only needed for the slow --pdf path; the fast path uses pdf_cells.swift (macOS)
+# or any tool that emits the same rows JSONL.
+pdfminer.six==20250506
