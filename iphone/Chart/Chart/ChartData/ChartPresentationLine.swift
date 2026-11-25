@@ -4,7 +4,6 @@ final class ChartPresentationLine {
   private let chartLine: ChartLine
 
   let minY: CGFloat
-  let maxY: CGFloat
   let path: CGPath
   let pathStartX: CGFloat
   /// Maps a value's distance to the X coordinate of `path`.
@@ -19,15 +18,12 @@ final class ChartPresentationLine {
 
     let values = chartLine.values
     var lower = CGFloat(Int.max)
-    var upper = CGFloat(Int.min)
     var maxDistance: CGFloat = 0
     for value in values {
       lower = min(value.y, lower)
-      upper = max(value.y, upper)
       maxDistance = max(value.x, maxDistance)
     }
     minY = lower
-    maxY = upper
 
     let xScale = maxDistance > 0 ? CGFloat(max(values.count - 1, 1)) / maxDistance : 0
     self.xScale = xScale
