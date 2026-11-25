@@ -649,7 +649,6 @@ extension NavigationDashboardViewController: NavigationDashboard.Rendering {
     bottomActionsMenu.setHidden(viewModel.isBottomActionsMenuHidden)
     startRouteButton.setState(viewModel.startButtonState)
     reverseRoutePointsButton.isEnabled = viewModel.canReverseRoutePoints
-    transportOptionsView.setSelectionEnabled(viewModel.isTransportSelectionEnabled)
 
     presentationStep = viewModel.presentationStep
     updatePresentationStep(viewModel.presentationStep)
