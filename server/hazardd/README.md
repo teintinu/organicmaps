@@ -66,9 +66,13 @@ cargo fmt --check
 cargo clippy --all-targets -- -D warnings
 cargo test          # 15 tests: 8 unit + 7 HTTP contract
 
-# end-to-end against Postgres
+# Postgres integration test (uses a scratch database)
 docker run -d --rm --name hazardd-pg -e POSTGRES_PASSWORD=hazard -e POSTGRES_DB=hazard \
   -p 15432:5432 postgres:16-alpine
+TEST_DATABASE_URL=postgres://postgres:hazard@127.0.0.1:15432/hazard \
+  cargo test --test postgres -- --ignored
+
+# run against Postgres
 DATABASE_URL=postgres://postgres:hazard@127.0.0.1:15432/hazard PORT=18081 TOKEN_PEPPER=t cargo run
 curl -s localhost:18081/health
 ```
