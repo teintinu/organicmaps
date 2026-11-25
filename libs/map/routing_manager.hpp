@@ -222,6 +222,9 @@ public:
   // Keep the direction unless only the opposite side of the entry has geometry.
   // At a gap the exact accepted distance keeps its section. Other distances use source order.
   FollowTrackResult UpdateFollowedTrackEntryAt(double distanceM);
+  // Move a track preview's entry to the source point nearest to |mercator| within |touchRect|.
+  // Returns false, leaving the tap to the place page, when the entry does not move there.
+  bool TryTapOnFollowedTrack(m2::PointD const & mercator, m2::RectD const & touchRect);
   // Reverse at the captured entry. A closed trailhead switches to its other endpoint occurrence.
   FollowTrackResult ReverseFollowedTrack();
   // Change this preview's profile (Vehicle, Bicycle or Pedestrian) without writing global defaults.
@@ -379,6 +382,7 @@ private:
   FollowTrackResult BuildFollowedTrack(std::shared_ptr<Track const> source, TrackSourcePosition entry,
                                        double entryDistanceM, bool reverse, routing::RouterType profile,
                                        bool keepViewport = false);
+  FollowTrackResult UpdateFollowedTrackEntry(TrackSourcePosition const & entry, double entryDistanceM);
   void InstallFollowedTrack(FollowSession session, bool keepViewport = false);
   void BuildFollowedTrackPreview(std::optional<m2::PointD> const & position);
   std::optional<m2::PointD> GetLatestGpsPosition() const;

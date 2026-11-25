@@ -2559,6 +2559,20 @@ void Framework::OnTapEvent(place_page::BuildInfo const & buildInfo)
   else if (m_routingManager.TryTapOnAlternativeRoute(buildInfo.m_mercator, m_currentModelView.GetScale()))
     return;
 
+  // A map tap moves a track preview's entry to the tapped track point, like its chart. Marks, POIs and the position
+  // keep their place pages, as do selections from search, lists and API requests.
+  if (buildInfo.m_source == place_page::BuildInfo::Source::User && umID == kml::kInvalidMarkId &&
+      !buildInfo.m_featureId.IsValid() && !buildInfo.m_isMyPosition)
+  {
+    auto const touchRect = df::TapInfo::GetDefaultTapRect(buildInfo.m_mercator, m_currentModelView).GetGlobalRect();
+    if (m_routingManager.TryTapOnFollowedTrack(buildInfo.m_mercator, touchRect))
+    {
+      if (HasPlacePageInfo())
+        DeactivateMapSelection();
+      return;
+    }
+  }
+
   auto placePageInfo = BuildPlacePageInfo(buildInfo);
 
   if (m_routingManager.IsRoutingActive() && m_routingManager.GetRenderRouterType() == routing::RouterType::Ruler &&
