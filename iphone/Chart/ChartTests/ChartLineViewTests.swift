@@ -47,6 +47,8 @@ final class ChartLineViewTests: XCTestCase {
     chart.onSelectedPointChanged = { reportedDistances.append($0) }
 
     chart.setViewport(lower: 1, upper: 3)
+    // Consecutive gesture updates can round to the same sample bounds.
+    chart.setViewport(lower: 1, upper: 3)
     XCTAssertEqual(reportedDistances, [1.5])
 
     chart.setSelectedPoint(4)

@@ -93,7 +93,6 @@ public class ChartView: UIView {
         let v = ChartLineView()
         v.clipsToBounds = true
         v.chartLine = line
-        v.lineWidth = 3
         v.frame = chartsContainerView.bounds
         v.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         chartsContainerView.insertSubview(v, belowSubview: segmentLinesView)
@@ -175,10 +174,8 @@ public class ChartView: UIView {
     let routeLength = chartData.distance(forChartX: CGFloat(chartData.pointsCount - 1))
     var upper = chartData.xAxisValueAt(CGFloat(xAxisView.upperBound))
     var lower = chartData.xAxisValueAt(CGFloat(xAxisView.lowerBound))
-    let rangeLength = upper - lower
     if x < lower || x > upper, routeLength > 0 {
-      let current = Double(chartInfoView.infoX) * rangeLength + lower
-      let currentChartX = chartData.chartX(forDistance: current)
+      let currentChartX = chartX(atFraction: chartInfoView.infoX)
       let targetChartX = chartData.chartX(forDistance: x)
       let dIdx = Int(round(targetChartX - currentChartX))
       var lowerIdx = xAxisView.lowerBound + dIdx
@@ -208,7 +205,7 @@ public class ChartView: UIView {
   }
 
   func setViewport(lower: Int, upper: Int, notifySelection: Bool = true) {
-    guard lower < upper else { return }
+    guard lower < upper, lower != xAxisView.lowerBound || upper != xAxisView.upperBound else { return }
     xAxisView.setBounds(lower: lower, upper: upper)
     updateCharts()
     chartInfoView.update()
@@ -352,9 +349,12 @@ public class ChartView: UIView {
     return abs(clampedPointX - selectedPointX) <= Self.selectedPointCaptureRadius
   }
 
+  private func chartX(atFraction fraction: CGFloat) -> CGFloat {
+    CGFloat(xAxisView.lowerBound) + fraction * CGFloat(xAxisView.upperBound - xAxisView.lowerBound)
+  }
+
   private var selectedDistance: Double {
-    let chartX = chartInfoView.infoX * CGFloat(xAxisView.upperBound - xAxisView.lowerBound) + CGFloat(xAxisView.lowerBound)
-    return chartData.distance(forChartX: chartX)
+    chartData.distance(forChartX: chartX(atFraction: chartInfoView.infoX))
   }
 
   private func notifySelectionFinished() {
@@ -375,8 +375,7 @@ extension ChartView: ChartInfoViewDelegate {
   func chartInfoView(_ view: ChartInfoView, didMoveToPoint pointX: CGFloat) {
     guard bounds.width > 0 else { return }
     let p = convert(CGPoint(x: pointX, y: 0), from: view)
-    let chartX = (p.x / bounds.width) * CGFloat(xAxisView.upperBound - xAxisView.lowerBound) + CGFloat(xAxisView.lowerBound)
-    onSelectedPointChanged?(chartData.distance(forChartX: chartX))
+    onSelectedPointChanged?(chartData.distance(forChartX: chartX(atFraction: p.x / bounds.width)))
   }
 
   func chartInfoView(_: ChartInfoView, shouldStartSelectingAtPoint pointX: CGFloat) -> Bool {
@@ -386,7 +385,7 @@ extension ChartView: ChartInfoViewDelegate {
   func chartInfoView(_ view: ChartInfoView, infoAtPointX pointX: CGFloat) -> (String, [ChartLineInfo])? {
     guard let chartData, bounds.width > 0 else { return nil }
     let p = convert(CGPoint(x: pointX, y: .zero), from: view)
-    let chartX = (p.x / bounds.width) * CGFloat(xAxisView.upperBound - xAxisView.lowerBound) + CGFloat(xAxisView.lowerBound)
+    let chartX = chartX(atFraction: p.x / bounds.width)
     guard chartX >= 0,
           chartX <= CGFloat(chartData.pointsCount - 1) else { return nil }
     let distance = CGFloat(chartData.distance(forChartX: chartX))

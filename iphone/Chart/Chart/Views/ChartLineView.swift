@@ -8,21 +8,15 @@ class ChartLineView: UIView {
   private var minY: CGFloat = 0
   private var maxY: CGFloat = 0
 
-  var lineWidth: CGFloat = 1 {
-    didSet {
-      shapeLayer.lineWidth = lineWidth
-    }
-  }
-
   var chartLine: ChartPresentationLine! {
     didSet {
       updateLineColors()
-      shapeLayer.lineWidth = lineWidth
     }
   }
 
   override init(frame: CGRect) {
     super.init(frame: frame)
+    shapeLayer.lineWidth = 3
     transform = CGAffineTransform.identity.scaledBy(x: 1, y: -1)
     isUserInteractionEnabled = false
   }
