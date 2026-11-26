@@ -220,5 +220,11 @@
       android:summary="@string/hazard_report_summary"
       app:singleLineTitle="false"
       android:order="2" />
+    <Preference
+      android:key="@string/pref_nearby_hazards"
+      android:title="@string/nearby_hazards_title"
+      android:summary="@string/nearby_hazards_summary"
+      app:singleLineTitle="false"
+      android:order="3" />
   </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

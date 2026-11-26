@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,6 +17,13 @@ public final class HazardReporter
   public interface Callback
   {
     void onSuccess(@NonNull Hazard hazard);
+
+    void onError(@NonNull String message);
+  }
+
+  public interface ListCallback
+  {
+    void onSuccess(@NonNull List<Hazard> hazards);
 
     void onError(@NonNull String message);
   }
@@ -32,6 +40,57 @@ public final class HazardReporter
     return HazardSettings.getBaseUrl(context) != null;
   }
 
+  @NonNull
+  private static HazardClient clientWithToken(@NonNull Context context) throws IOException
+  {
+    final String baseUrl = HazardSettings.getBaseUrl(context);
+    if (baseUrl == null)
+      throw new IOException("no hazard service configured");
+    final HazardClient client = new HazardClient(baseUrl, new OkHttpClient());
+    String token = HazardSettings.getToken(context);
+    if (token == null)
+    {
+      token = client.registerDevice().token;
+      HazardSettings.setToken(context, token);
+    }
+    client.setToken(token);
+    return client;
+  }
+
+  public static void list(@NonNull Context context, double minLon, double minLat, double maxLon,
+                          double maxLat, @NonNull ListCallback callback)
+  {
+    final Context appContext = context.getApplicationContext();
+    EXECUTOR.execute(() -> {
+      try
+      {
+        final List<Hazard> hazards = clientWithToken(appContext).list(minLon, minLat, maxLon, maxLat, null, 100);
+        MAIN.post(() -> callback.onSuccess(hazards));
+      }
+      catch (IOException e)
+      {
+        MAIN.post(() -> callback.onError(e.getMessage() == null ? e.toString() : e.getMessage()));
+      }
+    });
+  }
+
+  public static void vote(@NonNull Context context, @NonNull String hazardId,
+                          @NonNull String vote, @NonNull Callback callback)
+  {
+    final Context appContext = context.getApplicationContext();
+    EXECUTOR.execute(() -> {
+      try
+      {
+        final Hazard hazard = clientWithToken(appContext).vote(hazardId, vote);
+        MAIN.post(() -> callback.onSuccess(hazard));
+      }
+      catch (IOException e)
+      {
+        postError(callback, e.getMessage() == null ? e.toString() : e.getMessage());
+      }
+    });
+  }
+
   public static void report(@NonNull Context context, @NonNull HazardDraft draft,
                             @NonNull Callback callback)
   {
@@ -39,20 +98,7 @@ public final class HazardReporter
     EXECUTOR.execute(() -> {
       try
       {
-        final String baseUrl = HazardSettings.getBaseUrl(appContext);
-        if (baseUrl == null)
-        {
-          postError(callback, "no hazard service configured");
-          return;
-        }
-        final HazardClient client = new HazardClient(baseUrl, new OkHttpClient());
-        String token = HazardSettings.getToken(appContext);
-        if (token == null)
-        {
-          token = client.registerDevice().token;
-          HazardSettings.setToken(appContext, token);
-        }
-        client.setToken(token);
+        final HazardClient client = clientWithToken(appContext);
         final Hazard hazard = client.report(draft, UUID.randomUUID().toString());
         MAIN.post(() -> callback.onSuccess(hazard));
       }

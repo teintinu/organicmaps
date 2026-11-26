@@ -47116,3 +47116,43 @@ en = Waiting for a GPS location. Try again in a moment.
 comment = Shown when no endpoint is configured.
 tags = android-app
 en = Set the hazard service URL in Settings first.
+
+[pref_nearby_hazards]
+comment = Preference key for listing nearby hazards.
+tags = android-app
+en = Nearby hazards
+
+[nearby_hazards_title]
+comment = Title of the nearby hazards list.
+tags = android-app
+en = Nearby hazards
+
+[nearby_hazards_summary]
+comment = Summary of the nearby hazards setting.
+tags = android-app
+en = Show what drivers reported around the map centre.
+
+[no_hazards_nearby]
+comment = Shown when the area has no hazard reports.
+tags = android-app
+en = No hazards nearby.
+
+[hazard_vote_question]
+comment = Question shown before voting on a hazard.
+tags = android-app
+en = Is this hazard still there?
+
+[hazard_vote_confirm]
+comment = Vote confirming that a hazard exists.
+tags = android-app
+en = Still there
+
+[hazard_vote_deny]
+comment = Vote denying that a hazard exists.
+tags = android-app
+en = Not there
+
+[hazard_vote_sent]
+comment = Confirmation after voting.
+tags = android-app
+en = Thanks for the update!

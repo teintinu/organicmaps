@@ -1006,4 +1006,20 @@
     <string name="hazard_no_location">Waiting for a GPS location. Try again in a moment.</string>
     <!-- Shown when no endpoint is configured. -->
     <string name="hazard_not_configured">Set the hazard service URL in Settings first.</string>
+    <!-- Preference key for listing nearby hazards. -->
+    <string name="pref_nearby_hazards">Nearby hazards</string>
+    <!-- Title of the nearby hazards list. -->
+    <string name="nearby_hazards_title">Nearby hazards</string>
+    <!-- Summary of the nearby hazards setting. -->
+    <string name="nearby_hazards_summary">Show what drivers reported around the map centre.</string>
+    <!-- Shown when the area has no hazard reports. -->
+    <string name="no_hazards_nearby">No hazards nearby.</string>
+    <!-- Question shown before voting on a hazard. -->
+    <string name="hazard_vote_question">Is this hazard still there?</string>
+    <!-- Vote confirming that a hazard exists. -->
+    <string name="hazard_vote_confirm">Still there</string>
+    <!-- Vote denying that a hazard exists. -->
+    <string name="hazard_vote_deny">Not there</string>
+    <!-- Confirmation after voting. -->
+    <string name="hazard_vote_sent">Thanks for the update!</string>
 </resources>
