@@ -32,7 +32,7 @@ curl -s localhost:8080/v1/meta
 Put Caddy/nginx in front for TLS:
 
 ```caddyfile
-gps.teintinu.com {
+hazards.example.org {
     encode zstd gzip
     reverse_proxy 127.0.0.1:8080
 }
