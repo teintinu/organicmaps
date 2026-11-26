@@ -202,4 +202,23 @@
       android:order="1">
     </Preference>
   </androidx.preference.PreferenceCategory>
+  <androidx.preference.PreferenceCategory
+    android:key="@string/pref_hazard_category"
+    android:title="@string/hazard_settings_title"
+    android:order="6">
+    <EditTextPreference
+      android:key="@string/pref_hazard_service_url"
+      android:title="@string/hazard_service_url_title"
+      android:summary="@string/hazard_service_url_summary"
+      android:dialogTitle="@string/hazard_service_url_title"
+      app:useSimpleSummaryProvider="true"
+      app:singleLineTitle="false"
+      android:order="1" />
+    <Preference
+      android:key="@string/pref_report_hazard"
+      android:title="@string/hazard_report_title"
+      android:summary="@string/hazard_report_summary"
+      app:singleLineTitle="false"
+      android:order="2" />
+  </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

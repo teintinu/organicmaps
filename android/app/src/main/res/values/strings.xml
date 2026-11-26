@@ -966,4 +966,44 @@
     <string name="navigate_track_finish">Track Finish</string>
     <!-- Error when the selected connected track section has no geometry left in the requested direction. -->
     <string name="track_no_remaining_geometry">No track remains in this direction. Select another point.</string>
+    <!-- Settings category for community road reports. -->
+    <string name="hazard_settings_title">Road reports</string>
+    <!-- Preference key for the road reports category. -->
+    <string name="pref_hazard_category">Road reports</string>
+    <!-- Preference key for the hazard service URL. -->
+    <string name="pref_hazard_service_url">Hazard service URL</string>
+    <!-- Title of the hazard service URL setting. -->
+    <string name="hazard_service_url_title">Hazard service URL</string>
+    <!-- Summary of the hazard service URL setting. -->
+    <string name="hazard_service_url_summary">For example https://hazards.example.org/v1</string>
+    <!-- Preference key for reporting a road problem. -->
+    <string name="pref_report_hazard">Report a road problem</string>
+    <!-- Title of the hazard reporting dialog. -->
+    <string name="hazard_report_title">Report a road problem</string>
+    <!-- Summary of the hazard reporting setting. -->
+    <string name="hazard_report_summary">Send a pothole, accident or other hazard at your location.</string>
+    <!-- Hazard type. -->
+    <string name="hazard_type_pothole">Pothole</string>
+    <!-- Hazard type. -->
+    <string name="hazard_type_accident">Accident</string>
+    <!-- Hazard type. -->
+    <string name="hazard_type_closure">Road closure</string>
+    <!-- Hazard type. -->
+    <string name="hazard_type_construction">Roadworks</string>
+    <!-- Hazard type. -->
+    <string name="hazard_type_stopped">Stopped vehicle</string>
+    <!-- Hazard type. -->
+    <string name="hazard_type_flooding">Flooding</string>
+    <!-- Hazard type. -->
+    <string name="hazard_type_debris">Debris on road</string>
+    <!-- Hazard type. -->
+    <string name="hazard_type_animal">Animal on road</string>
+    <!-- Confirmation after sending a hazard report. -->
+    <string name="hazard_report_sent">Report sent. Thank you!</string>
+    <!-- Error after a failed hazard report. -->
+    <string name="hazard_report_failed">Could not send the report: %s</string>
+    <!-- Shown when there is no location yet. -->
+    <string name="hazard_no_location">Waiting for a GPS location. Try again in a moment.</string>
+    <!-- Shown when no endpoint is configured. -->
+    <string name="hazard_not_configured">Set the hazard service URL in Settings first.</string>
 </resources>

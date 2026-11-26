@@ -14,6 +14,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.TwoStatePreference;
 import app.organicmaps.MwmApplication;
 import app.organicmaps.R;
+import app.organicmaps.dialog.HazardReportDialogFragment;
 import app.organicmaps.downloader.OnmapDownloader;
 import app.organicmaps.editor.LanguagesFragment;
 import app.organicmaps.editor.ProfileActivity;
@@ -146,6 +147,11 @@ public class SettingsPrefsFragment extends BaseXmlSettingsFragment implements La
       {
         getSettingsActivity().stackFragment(BgTilesSettingsFragment.class, getString(R.string.pref_bg_tiles_title),
                                             null);
+      }
+      else if (key.equals(getString(R.string.pref_report_hazard)))
+      {
+        HazardReportDialogFragment.show(requireActivity().getSupportFragmentManager());
+        return true;
       }
       else if (key.equals(getString(R.string.pref_help)))
       {

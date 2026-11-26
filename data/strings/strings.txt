@@ -47016,3 +47016,103 @@ uk = У цьому напрямку треку більше немає. Вибе
 vi = Không còn hành trình theo hướng này. Hãy chọn điểm khác.
 zh-Hans = 此方向上已没有剩余轨迹。请选择其他点。
 zh-Hant = 此方向上已無剩餘軌跡。請選擇其他點。
+
+[hazard_settings_title]
+comment = Settings category for community road reports.
+tags = android-app
+en = Road reports
+
+[pref_hazard_category]
+comment = Preference key for the road reports category.
+tags = android-app
+en = Road reports
+
+[pref_hazard_service_url]
+comment = Preference key for the hazard service URL.
+tags = android-app
+en = Hazard service URL
+
+[hazard_service_url_title]
+comment = Title of the hazard service URL setting.
+tags = android-app
+en = Hazard service URL
+
+[hazard_service_url_summary]
+comment = Summary of the hazard service URL setting.
+tags = android-app
+en = For example https://hazards.example.org/v1
+
+[pref_report_hazard]
+comment = Preference key for reporting a road problem.
+tags = android-app
+en = Report a road problem
+
+[hazard_report_title]
+comment = Title of the hazard reporting dialog.
+tags = android-app
+en = Report a road problem
+
+[hazard_report_summary]
+comment = Summary of the hazard reporting setting.
+tags = android-app
+en = Send a pothole, accident or other hazard at your location.
+
+[hazard_type_pothole]
+comment = Hazard type.
+tags = android-app
+en = Pothole
+
+[hazard_type_accident]
+comment = Hazard type.
+tags = android-app
+en = Accident
+
+[hazard_type_closure]
+comment = Hazard type.
+tags = android-app
+en = Road closure
+
+[hazard_type_construction]
+comment = Hazard type.
+tags = android-app
+en = Roadworks
+
+[hazard_type_stopped]
+comment = Hazard type.
+tags = android-app
+en = Stopped vehicle
+
+[hazard_type_flooding]
+comment = Hazard type.
+tags = android-app
+en = Flooding
+
+[hazard_type_debris]
+comment = Hazard type.
+tags = android-app
+en = Debris on road
+
+[hazard_type_animal]
+comment = Hazard type.
+tags = android-app
+en = Animal on road
+
+[hazard_report_sent]
+comment = Confirmation after sending a hazard report.
+tags = android-app
+en = Report sent. Thank you!
+
+[hazard_report_failed]
+comment = Error after a failed hazard report.
+tags = android-app
+en = Could not send the report: %s
+
+[hazard_no_location]
+comment = Shown when there is no location yet.
+tags = android-app
+en = Waiting for a GPS location. Try again in a moment.
+
+[hazard_not_configured]
+comment = Shown when no endpoint is configured.
+tags = android-app
+en = Set the hazard service URL in Settings first.

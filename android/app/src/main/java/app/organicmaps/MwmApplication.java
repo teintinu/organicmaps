@@ -27,6 +27,7 @@ import app.organicmaps.sdk.Map;
 import app.organicmaps.sdk.MapsReadiness;
 import app.organicmaps.sdk.OrganicMaps;
 import app.organicmaps.sdk.display.DisplayManager;
+import app.organicmaps.sdk.hazards.HazardSettings;
 import app.organicmaps.sdk.location.LocationHelper;
 import app.organicmaps.sdk.location.LocationState;
 import app.organicmaps.sdk.location.LocationUtils;
@@ -134,6 +135,7 @@ public class MwmApplication extends Application implements Application.ActivityL
     sInstance = this;
 
     PreferenceManager.setDefaultValues(this, R.xml.prefs_main, false);
+    HazardSettings.ensureDefaultBaseUrl(this, BuildConfig.HAZARD_API_URL);
     mOrganicMaps = new OrganicMaps(getApplicationContext(), BuildConfig.FLAVOR, BuildConfig.APPLICATION_ID,
                                    BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME);
     getMapsReadiness().runWhenReady(() -> {

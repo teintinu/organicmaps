@@ -69,6 +69,8 @@ android {
     println('VersionCode: ' + versionCode)
     applicationId rootProject.ext.appId
     buildConfigField 'String', 'SUPPORT_MAIL', '"android@organicmaps.app"'
+    // Optional default for the hazard service; set at build time, never committed.
+    buildConfigField 'String', 'HAZARD_API_URL', "\"${System.getenv('HAZARD_API_URL') ?: ''}\""
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Should be customized in flavors.
     buildConfigField 'String', 'REVIEW_URL', '""'
