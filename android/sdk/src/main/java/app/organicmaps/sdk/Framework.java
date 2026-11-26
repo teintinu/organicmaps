@@ -111,6 +111,12 @@ public class Framework
   @Size(2)
   public static native double[] nativeGetScreenRectCenter();
 
+  /** @return {x, y, visible} in screen pixels for the given coordinates. */
+  public static native double[] nativeToScreen(double lat, double lon);
+
+  /** @return {lat, lon} for a screen pixel. */
+  public static native double[] nativeScreenToLatLon(double x, double y);
+
   public static native DistanceAndAzimut nativeGetDistanceAndAzimuth(double dstMerX, double dstMerY, double srcLat,
                                                                      double srcLon, double north);
 

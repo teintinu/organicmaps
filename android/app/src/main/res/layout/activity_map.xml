@@ -16,6 +16,11 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent" />
 
+    <app.organicmaps.hazard.HazardOverlayView
+      android:id="@+id/hazard_overlay"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
     <include
       android:id="@+id/onmap_downloader"
       layout="@layout/onmap_downloader"

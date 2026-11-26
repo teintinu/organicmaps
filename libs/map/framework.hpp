@@ -578,6 +578,7 @@ public:
   /// @returns Geo point under the visible viewport center: the pixel where the Add-Place crosshair
   /// is drawn and the anchor that SetViewportCenter() matches its argument to.
   m2::PointD GetViewportCenter() const;
+  ScreenBase const & GetCurrentModelView() const { return m_currentModelView; }
   void SetViewportCenter(m2::PointD const & pt, int zoomLevel = -1, bool isAnim = true,
                          bool trackVisibleViewport = false);
 

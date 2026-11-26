@@ -57,6 +57,8 @@ import app.organicmaps.base.BaseMwmFragmentActivity;
 import app.organicmaps.bookmarks.BookmarkCategoriesActivity;
 import app.organicmaps.downloader.DownloaderActivity;
 import app.organicmaps.downloader.OnmapDownloader;
+import app.organicmaps.hazard.HazardOverlayView;
+import app.organicmaps.hazard.NearbyHazards;
 import app.organicmaps.editor.EditorActivity;
 import app.organicmaps.editor.FeatureCategoryActivity;
 import app.organicmaps.editor.OsmLoginActivity;
@@ -156,6 +158,7 @@ public class MwmActivity extends BaseMwmFragmentActivity
   @SuppressWarnings("NotNullFieldNotInitialized")
   @NonNull
   private MapController mMapController;
+  private HazardOverlayView mHazardOverlay;
 
   private View mPointChooser;
   private Toolbar mPointChooserToolbar;
@@ -526,6 +529,11 @@ public class MwmActivity extends BaseMwmFragmentActivity
     mIntentConsumed = isIntentConsumed(savedInstanceState, getIntent());
 
     setContentView(R.layout.activity_map);
+    mHazardOverlay = findViewById(R.id.hazard_overlay);
+    mHazardOverlay.setListener(hazard -> {
+      Framework.nativeSetViewportCenter(hazard.lat, hazard.lon, 16);
+      NearbyHazards.showVote(this, hazard);
+    });
     makeNavigationBarTransparentInLightMode();
 
     mRoutingPlanViewModel = new ViewModelProvider(this).get(RoutingPlanViewModel.class);
@@ -1012,6 +1020,8 @@ public class MwmActivity extends BaseMwmFragmentActivity
   protected void onResume()
   {
     super.onResume();
+    if (mHazardOverlay != null)
+      mHazardOverlay.startRefreshing(this);
     ThemeSwitcher.INSTANCE.synchronizeApplicationTheme();
     ThemeSwitcher.INSTANCE.synchronizeMapStyle(this, mMapController.isRenderingActive());
     makeNavigationBarTransparentInLightMode();
@@ -1069,6 +1079,8 @@ public class MwmActivity extends BaseMwmFragmentActivity
   @Override
   protected void onPause()
   {
+    if (mHazardOverlay != null)
+      mHazardOverlay.stopRefreshing();
     if (mOnmapDownloader != null)
       mOnmapDownloader.onPause();
     MwmApplication.from(this).getSensorHelper().removeListener(this);

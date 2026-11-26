@@ -1164,6 +1164,29 @@ JNIEXPORT jdoubleArray Java_app_organicmaps_sdk_Framework_nativeGetScreenRectCen
   return jLatLon;
 }
 
+JNIEXPORT jdoubleArray Java_app_organicmaps_sdk_Framework_nativeToScreen(JNIEnv * env, jclass,
+                                                                         jdouble lat, jdouble lon)
+{
+  ScreenBase const & screen = frm()->GetCurrentModelView();
+  m2::PointD const pixel = screen.GtoP(mercator::FromLatLon(lat, lon));
+  bool const visible = screen.PixelRect().IsPointInside(pixel);
+
+  double values[] = {pixel.x, pixel.y, visible ? 1.0 : 0.0};
+  jdoubleArray result = env->NewDoubleArray(3);
+  env->SetDoubleArrayRegion(result, 0, 3, values);
+  return result;
+}
+
+JNIEXPORT jdoubleArray Java_app_organicmaps_sdk_Framework_nativeScreenToLatLon(JNIEnv * env, jclass,
+                                                                               jdouble x, jdouble y)
+{
+  m2::PointD const global = frm()->GetCurrentModelView().PtoG(m2::PointD(x, y));
+  double values[] = {mercator::YToLat(global.y), mercator::XToLon(global.x)};
+  jdoubleArray result = env->NewDoubleArray(2);
+  env->SetDoubleArrayRegion(result, 0, 2, values);
+  return result;
+}
+
 JNIEXPORT void Java_app_organicmaps_sdk_Framework_nativeRestoreDownloadQueue(JNIEnv * env, jclass)
 {
   frm()->GetStorage().RestoreDownloadQueue();

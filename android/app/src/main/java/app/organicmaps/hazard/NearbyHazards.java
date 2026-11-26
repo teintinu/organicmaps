@@ -88,13 +88,13 @@ public final class NearbyHazards
         .setItems(items, (dialog, which) -> {
           final Hazard hazard = sorted.get(which);
           Framework.nativeSetViewportCenter(hazard.lat, hazard.lon, ZOOM);
-          askVote(activity, hazard);
+          showVote(activity, hazard);
         })
         .setNegativeButton(android.R.string.cancel, null)
         .show();
   }
 
-  private static void askVote(@NonNull Activity activity, @NonNull Hazard hazard)
+  public static void showVote(@NonNull Activity activity, @NonNull Hazard hazard)
   {
     new MaterialAlertDialogBuilder(activity)
         .setTitle(typeLabel(hazard.type))
