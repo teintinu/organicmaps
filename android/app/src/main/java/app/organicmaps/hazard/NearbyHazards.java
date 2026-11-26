@@ -34,7 +34,7 @@ public final class NearbyHazards
       toast(activity, R.string.hazard_not_configured);
       return;
     }
-    final double[] center = Framework.nativeGetParsedCenterLatLon();
+    final double[] center = Framework.nativeGetScreenRectCenter();
     if (center == null)
     {
       toast(activity, R.string.hazard_no_location);

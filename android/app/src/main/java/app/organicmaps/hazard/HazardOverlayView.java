@@ -76,7 +76,7 @@ public class HazardOverlayView extends View
 
   private void refresh()
   {
-    final double[] center = Framework.nativeGetParsedCenterLatLon();
+    final double[] center = Framework.nativeGetScreenRectCenter();
     if (center == null)
     {
       mHandler.postDelayed(mRefreshTask, REFRESH_MS);
